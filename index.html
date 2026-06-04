@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบรับ-ส่งมอบเครื่องมือประจำรถแก้ไฟ</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#C0392B;--red-light:#FADBD8;--red-dark:#922B21;
+  --orange:#E67E22;--orange-light:#FDEBD0;
+  --green:#27AE60;--green-light:#EAFAF1;
+  --blue:#1A5276;--blue-light:#EAF4FB;
+  --gray-100:#F8F9FA;--gray-200:#ECEFF1;--gray-300:#CFD8DC;
+  --gray-500:#78909C;--gray-700:#37474F;--gray-900:#1A2332;
+  --white:#fff;--radius:8px;--radius-lg:12px;
+  --shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+body{font-family:'Sarabun',sans-serif;background:#F0F2F5;min-height:100vh;color:var(--gray-900)}
+.container{max-width:780px;margin:0 auto;padding:16px}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,var(--red-dark) 0%,var(--red) 100%);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1rem;box-shadow:0 4px 16px rgba(192,57,43,0.35);flex-wrap:wrap}
+.header-icon{background:rgba(255,255,255,0.15);border-radius:50%;width:50px;height:50px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px}
+.header h1{color:white;font-size:17px;font-weight:700;line-height:1.3}
+.header p{color:rgba(255,255,255,0.75);font-size:12px;margin-top:2px}
+.header-btns{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.btn-tab{border:none;border-radius:var(--radius);padding:8px 14px;font-size:13px;font-family:inherit;font-weight:600;cursor:pointer;transition:.2s}
+.btn-tab.active{background:white;color:var(--red)}
+.btn-tab.inactive{background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3)}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.25rem}
+.stat-card{background:var(--white);border:0.5px solid var(--gray-300);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow)}
+.stat-card .label{font-size:11px;color:var(--gray-500);margin-bottom:3px}
+.stat-card .value{font-size:24px;font-weight:700}
+
+/* SETUP BAR */
+.setup-bar{background:var(--blue-light);border:0.5px solid #AED6F1;border-radius:var(--radius);padding:10px 14px;margin-bottom:1rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.setup-bar label{font-size:13px;color:var(--blue);font-weight:600;white-space:nowrap}
+.setup-bar input{flex:1;min-width:180px;padding:6px 10px;border:0.5px solid #AED6F1;border-radius:6px;font-size:12px;font-family:inherit}
+.setup-bar button{background:var(--blue);color:white;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap}
+
+/* CARD */
+.card{background:var(--white);border:0.5px solid var(--gray-300);border-radius:var(--radius-lg);padding:1.25rem;box-shadow:var(--shadow);margin-bottom:1rem}
+.card-title{font-size:15px;font-weight:600;color:var(--gray-900);margin-bottom:1rem;padding-bottom:10px;border-bottom:0.5px solid var(--gray-200)}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-grid.full{grid-template-columns:1fr}
+.field label{font-size:12px;color:var(--gray-500);display:block;margin-bottom:4px}
+.field label span{color:var(--red)}
+.field input,.field select,.field textarea{width:100%;padding:8px 10px;border:0.5px solid var(--gray-300);border-radius:var(--radius);font-size:14px;font-family:inherit;background:white;transition:border-color .2s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--red)}
+.field textarea{resize:vertical}
+.field .car-row{display:flex;gap:8px}
+.field input.other-input{border-color:var(--orange)}
+
+/* RADIO */
+.radio-group{display:flex;gap:12px;margin-top:2px}
+.radio-group label{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px}
+.radio-group input{accent-color:var(--red)}
+.extra-fields{display:none;margin-top:8px}
+.extra-fields input{width:100%;padding:7px 10px;border-radius:var(--radius);font-size:13px;font-family:inherit;margin-bottom:6px}
+.extra-fields input.orange{border:0.5px solid var(--orange)}
+.extra-fields input.green{border:0.5px solid var(--green)}
+
+/* SIGNATURE */
+.sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px}
+.sig-label{font-size:12px;color:var(--gray-500);margin-bottom:6px}
+.sig-wrap{position:relative}
+canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);cursor:crosshair;touch-action:none;display:block;width:100%;height:90px;background:#fff}
+.sig-clear{position:absolute;top:6px;right:6px;background:var(--red-light);color:var(--red-dark);border:none;border-radius:4px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:inherit}
+
+/* BUTTONS */
+.btn{border:none;border-radius:var(--radius);padding:10px 18px;font-size:14px;font-family:inherit;font-weight:600;cursor:pointer;transition:.15s}
+.btn-primary{background:var(--red);color:white}
+.btn-primary:hover{background:var(--red-dark)}
+.btn-secondary{background:var(--gray-100);color:var(--gray-700);border:0.5px solid var(--gray-300)}
+.btn-blue{background:var(--blue);color:white}
+.btn-row{display:flex;gap:8px;margin-top:4px}
+
+/* ALERTS */
+.alert{display:none;border-radius:var(--radius);padding:8px 12px;font-size:13px;margin-bottom:12px}
+.alert.error{background:var(--red-light);color:var(--red-dark)}
+.alert.info{background:var(--blue-light);color:var(--blue)}
+.alert.success{background:var(--green-light);color:#1E8449}
+.alert.warn{background:var(--orange-light);color:#784212}
+
+/* HISTORY */
+.history-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:10px;border-bottom:0.5px solid var(--gray-200);flex-wrap:wrap;gap:8px}
+.history-toolbar input{padding:6px 10px;border:0.5px solid var(--gray-300);border-radius:var(--radius);font-size:13px;font-family:inherit;width:160px}
+.history-actions{display:flex;gap:8px}
+.history-actions button{border:none;border-radius:var(--radius);padding:6px 12px;font-size:13px;font-family:inherit;cursor:pointer}
+
+.record-card{border:0.5px solid var(--gray-200);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;background:var(--gray-100)}
+.record-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.record-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.badge{font-size:12px;padding:2px 8px;border-radius:4px;font-weight:500}
+.record-info{font-size:13px;color:var(--gray-700);display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.record-note{margin-top:5px;font-size:12px;color:var(--gray-500)}
+.record-sigs{display:flex;gap:16px;margin-top:8px;padding-top:8px;border-top:0.5px solid var(--gray-300)}
+.sig-thumb{display:flex;flex-direction:column;gap:2px}
+.sig-thumb span{font-size:11px;color:var(--gray-500)}
+.sig-thumb img{height:44px;border:0.5px solid var(--gray-300);border-radius:4px;background:#fff}
+.record-btns{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.record-btns button{border:none;border-radius:var(--radius);padding:5px 10px;font-size:12px;font-family:inherit;cursor:pointer}
+
+/* TOAST */
+#toast{display:none;position:fixed;bottom:20px;right:20px;background:var(--gray-900);color:white;padding:10px 16px;border-radius:var(--radius);font-size:13px;z-index:9999;max-width:300px;box-shadow:0 4px 16px rgba(0,0,0,0.3)}
+
+/* PRINT */
+@media print{
+  body{background:white}
+  #no-print{display:none!important}
+  #print-area{display:block!important}
+}
+#print-area{display:none;font-family:'Sarabun',sans-serif;padding:20px;max-width:700px;margin:auto}
+.print-header{text-align:center;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:12px}
+.print-header h2{font-size:16px;font-weight:700}
+.print-header p{font-size:12px}
+.print-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px}
+.print-table td{padding:5px 8px;border:1px solid #999}
+.print-table td.th{background:#f5f5f5;font-weight:600;width:25%}
+.print-sig-table{width:100%;border-collapse:collapse;font-size:13px}
+.print-sig-table td{padding:8px;border:1px solid #999;text-align:center;width:50%}
+
+/* RESPONSIVE */
+@media(max-width:520px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .form-grid{grid-template-columns:1fr}
+  .sig-grid{grid-template-columns:1fr}
+  .header-btns{width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- ========== PRINT AREA ========== -->
+<div id="print-area">
+  <div class="print-header">
+    <h2>แบบฟอร์มรับ-ส่งมอบเครื่องมือประจำรถแก้ไฟ</h2>
+    <p>FM-ฉ.3-94 | การไฟฟ้าส่วนภูมิภาค</p>
+  </div>
+  <table class="print-table">
+    <tr><td class="th">วันที่</td><td id="p-date"></td><td class="th">เวลา</td><td id="p-time"></td></tr>
+    <tr><td class="th">ทะเบียนรถ</td><td id="p-car" colspan="3"></td></tr>
+    <tr><td class="th">จำนวนเครื่องมือ</td><td id="p-qty"></td><td class="th">สภาพ</td><td id="p-cond"></td></tr>
+    <tr id="p-broken-row"><td class="th">รายการชำรุด</td><td id="p-broken" colspan="3"></td></tr>
+    <tr><td class="th">หมายเหตุ</td><td id="p-note" colspan="3" style="min-height:36px"></td></tr>
+  </table>
+  <table class="print-sig-table">
+    <tr>
+      <td>
+        <div style="font-weight:600;margin-bottom:6px">ผู้ส่งมอบ</div>
+        <div id="p-sig-sender" style="min-height:60px;display:flex;align-items:center;justify-content:center"></div>
+        <div style="border-top:1px solid #999;padding-top:4px;margin-top:6px">ชื่อ: <span id="p-sender"></span></div>
+      </td>
+      <td>
+        <div style="font-weight:600;margin-bottom:6px">ผู้รับมอบ</div>
+        <div id="p-sig-receiver" style="min-height:60px;display:flex;align-items:center;justify-content:center"></div>
+        <div style="border-top:1px solid #999;padding-top:4px;margin-top:6px">ชื่อ: <span id="p-receiver"></span></div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<!-- ========== MAIN APP ========== -->
+<div id="no-print">
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-icon">🔥</div>
+    <div>
+      <h1>ระบบรับ-ส่งมอบเครื่องมือประจำรถแก้ไฟ</h1>
+      <p>FM-ฉ.3-94 | การไฟฟ้าส่วนภูมิภาค</p>
+    </div>
+    <div class="header-btns">
+      <button class="btn-tab active" id="btn-form" onclick="showView('form')">+ บันทึกใหม่</button>
+      <button class="btn-tab inactive" id="btn-history" onclick="showView('history')">📋 ประวัติ</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card" style="border-left:3px solid var(--red)">
+      <div class="label">ทั้งหมด</div>
+      <div class="value" id="stat-total" style="color:var(--gray-900)">0</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid var(--green)">
+      <div class="label">ครบ/พร้อม</div>
+      <div class="value" id="stat-ok" style="color:var(--green)">0</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid var(--orange)">
+      <div class="label">ชำรุด</div>
+      <div class="value" id="stat-warn" style="color:var(--orange)">0</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid var(--gray-500)">
+      <div class="label">วันนี้</div>
+      <div class="value" id="stat-today" style="color:var(--gray-700)">0</div>
+    </div>
+  </div>
+
+  <!-- APPS SCRIPT SETUP -->
+  <div class="setup-bar">
+    <label>🔗 Apps Script URL:</label>
+    <input type="text" id="script-url" placeholder="วาง Web App URL จาก Google Apps Script ที่นี่...">
+    <button onclick="saveScriptUrl()">บันทึก URL</button>
+    <span id="url-saved" style="font-size:12px;color:var(--green);display:none">✓ บันทึกแล้ว</span>
+  </div>
+
+  <!-- FORM VIEW -->
+  <div class="card" id="view-form">
+    <div class="card-title">📋 บันทึกการรับ-ส่งมอบ</div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>วันที่ <span>*</span></label>
+        <input type="date" id="f-date">
+      </div>
+      <div class="field">
+        <label>เวลา <span>*</span></label>
+        <select id="f-time">
+          <option value="08:30">08:30 น. (กะเช้า)</option>
+          <option value="00:30">00:30 น. (กะดึก)</option>
+          <option value="16:30">16:30 น. (กะบ่าย)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-grid full" style="margin-bottom:12px">
+      <div class="field">
+        <label>ทะเบียนรถ <span>*</span></label>
+        <div class="car-row">
+          <select id="f-car-select" onchange="toggleCarOther()" style="flex:1;padding:8px 10px;border:0.5px solid var(--gray-300);border-radius:var(--radius);font-size:14px;font-family:inherit;background:white">
+            <option value="">-- เลือกทะเบียนรถ --</option>
+            <option value="83-3537 สุรินทร์">83-3537 สุรินทร์</option>
+            <option value="บย 2665 สุรินทร์">บย 2665 สุรินทร์</option>
+            <option value="other">อื่นๆ (ระบุเอง)</option>
+          </select>
+          <input type="text" id="f-car-other" class="other-input" placeholder="ระบุทะเบียนรถ..." style="display:none;flex:1;padding:8px 10px;border-radius:var(--radius);font-size:14px;font-family:inherit">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>ผู้ส่งมอบ <span>*</span></label>
+        <input type="text" id="f-sender" placeholder="ชื่อ-นามสกุล">
+      </div>
+      <div class="field">
+        <label>ผู้รับมอบ <span>*</span></label>
+        <input type="text" id="f-receiver" placeholder="ชื่อ-นามสกุล">
+      </div>
+    </div>
+
+    <div class="form-grid" style="margin-bottom:14px">
+      <div class="field">
+        <label>จำนวนเครื่องมือ</label>
+        <div class="radio-group">
+          <label><input type="radio" name="qty" value="ครบ"> ครบ</label>
+          <label><input type="radio" name="qty" value="ไม่ครบ"> ไม่ครบ</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>สภาพเครื่องมือ</label>
+        <div class="radio-group">
+          <label><input type="radio" name="cond" id="cond-ok" value="พร้อมใช้งาน" onchange="toggleCondDetail()"> พร้อมใช้งาน</label>
+          <label><input type="radio" name="cond" id="cond-broken" value="ชำรุด" onchange="toggleCondDetail()"> ชำรุด</label>
+        </div>
+        <div id="cond-detail-wrap" class="extra-fields">
+          <input type="number" id="f-cond-count" class="orange" placeholder="จำนวนชิ้นที่ชำรุด" min="0">
+          <input type="text" id="f-cond-detail" class="orange" placeholder="ระบุรายการที่ชำรุด...">
+        </div>
+        <div id="ready-detail-wrap" class="extra-fields">
+          <input type="number" id="f-ready-count" class="green" placeholder="จำนวนชิ้นที่พร้อม" min="0">
+        </div>
+      </div>
+    </div>
+
+    <div class="sig-grid">
+      <div>
+        <div class="sig-label">✍️ ลายเซ็นผู้ส่งมอบ</div>
+        <div class="sig-wrap">
+          <canvas id="sig-sender" class="sig-pad"></canvas>
+          <button class="sig-clear" onclick="clearSig('sig-sender')">ล้าง</button>
+        </div>
+      </div>
+      <div>
+        <div class="sig-label">✍️ ลายเซ็นผู้รับมอบ</div>
+        <div class="sig-wrap">
+          <canvas id="sig-receiver" class="sig-pad"></canvas>
+          <button class="sig-clear" onclick="clearSig('sig-receiver')">ล้าง</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="field" style="margin-bottom:14px">
+      <label>หมายเหตุ</label>
+      <textarea id="f-note" rows="2" placeholder="ระบุรายละเอียดเพิ่มเติม (ถ้ามี)"></textarea>
+    </div>
+
+    <div class="alert error" id="form-error"></div>
+    <div class="alert" id="sheets-status"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="saveRecord()">💾 บันทึกข้อมูล</button>
+      <button class="btn btn-secondary" onclick="clearForm()">ล้างข้อมูล</button>
+    </div>
+  </div>
+
+  <!-- HISTORY VIEW -->
+  <div class="card" id="view-history" style="display:none">
+    <div class="history-toolbar">
+      <div style="font-size:15px;font-weight:600">📋 ประวัติการรับ-ส่งมอบ</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <input type="text" id="search-box" oninput="renderHistory()" placeholder="🔍 ค้นหา...">
+        <button class="btn btn-blue" onclick="printAll()" style="padding:6px 12px;font-size:13px">🖨️ พิมพ์</button>
+        <button class="btn btn-secondary" onclick="exportCSV()" style="padding:6px 12px;font-size:13px;border:0.5px solid var(--gray-300)">⬇️ CSV</button>
+      </div>
+    </div>
+    <div id="history-list"></div>
+  </div>
+
+</div>
+</div><!-- end no-print -->
+
+<div id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'fire_tool_records_v3';
+const SCRIPT_URL_KEY = 'fire_tool_script_url';
+let records = [];
+
+/* ── DATA ── */
+function loadData() {
+  try { records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch(e) { records = []; }
+  const url = localStorage.getItem(SCRIPT_URL_KEY) || '';
+  if (url) { document.getElementById('script-url').value = url; document.getElementById('url-saved').style.display = 'inline'; }
+  updateStats();
+}
+function saveData() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(records)); } catch(e) {}
+  updateStats();
+}
+function updateStats() {
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('stat-total').textContent = records.length;
+  document.getElementById('stat-ok').textContent = records.filter(r => r.qty==='ครบ' && r.cond==='พร้อมใช้งาน').length;
+  document.getElementById('stat-warn').textContent = records.filter(r => r.qty==='ไม่ครบ' || r.cond==='ชำรุด').length;
+  document.getElementById('stat-today').textContent = records.filter(r => r.date===today).length;
+}
+function saveScriptUrl() {
+  const url = document.getElementById('script-url').value.trim();
+  localStorage.setItem(SCRIPT_URL_KEY, url);
+  const el = document.getElementById('url-saved');
+  el.style.display = 'inline';
+  setTimeout(() => el.style.display = 'none', 2000);
+  showToast('✓ บันทึก URL แล้ว');
+}
+
+/* ── UI ── */
+function showView(v) {
+  document.getElementById('view-form').style.display = v==='form' ? 'block' : 'none';
+  document.getElementById('view-history').style.display = v==='history' ? 'block' : 'none';
+  if (v==='history') renderHistory();
+  document.getElementById('btn-form').className = 'btn-tab ' + (v==='form'?'active':'inactive');
+  document.getElementById('btn-history').className = 'btn-tab ' + (v==='history'?'active':'inactive');
+}
+function toggleCarOther() {
+  const sel = document.getElementById('f-car-select').value;
+  const oth = document.getElementById('f-car-other');
+  oth.style.display = sel==='other' ? 'block' : 'none';
+  if (sel==='other') oth.focus(); else oth.value = '';
+}
+function getCarValue() {
+  const sel = document.getElementById('f-car-select').value;
+  return sel==='other' ? document.getElementById('f-car-other').value.trim() : sel;
+}
+function toggleCondDetail() {
+  document.getElementById('cond-detail-wrap').style.display = document.getElementById('cond-broken').checked ? 'block' : 'none';
+  document.getElementById('ready-detail-wrap').style.display = document.getElementById('cond-ok').checked ? 'block' : 'none';
+}
+
+/* ── SIGNATURE ── */
+function initSig(id) {
+  const c = document.getElementById(id);
+  c.width = c.offsetWidth || 300; c.height = 90;
+  const ctx = c.getContext('2d');
+  ctx.strokeStyle = '#0000AA'; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  let drawing = false, lx = 0, ly = 0;
+  function pos(e) {
+    const r = c.getBoundingClientRect();
+    if (e.touches) return { x: e.touches[0].clientX-r.left, y: e.touches[0].clientY-r.top };
+    return { x: e.clientX-r.left, y: e.clientY-r.top };
+  }
+  c.addEventListener('mousedown', e => { drawing=true; const p=pos(e); lx=p.x; ly=p.y; });
+  c.addEventListener('mousemove', e => { if(!drawing) return; const p=pos(e); ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(p.x,p.y); ctx.stroke(); lx=p.x; ly=p.y; });
+  c.addEventListener('mouseup', () => drawing=false);
+  c.addEventListener('mouseleave', () => drawing=false);
+  c.addEventListener('touchstart', e => { e.preventDefault(); drawing=true; const p=pos(e); lx=p.x; ly=p.y; }, {passive:false});
+  c.addEventListener('touchmove', e => { e.preventDefault(); if(!drawing) return; const p=pos(e); ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(p.x,p.y); ctx.stroke(); lx=p.x; ly=p.y; }, {passive:false});
+  c.addEventListener('touchend', () => drawing=false);
+}
+function clearSig(id) { const c=document.getElementById(id); c.getContext('2d').clearRect(0,0,c.width,c.height); }
+function isSigEmpty(id) {
+  const c=document.getElementById(id);
+  return !Array.from(c.getContext('2d').getImageData(0,0,c.width,c.height).data).some(v=>v!==0);
+}
+function getSigData(id) { return isSigEmpty(id) ? '' : document.getElementById(id).toDataURL('image/png'); }
+
+/* ── SHEETS ── */
+async function sendToSheet(rec) {
+  const url = localStorage.getItem(SCRIPT_URL_KEY) || document.getElementById('script-url').value.trim();
+  if (!url) return { ok:false, msg:'ยังไม่ได้ตั้งค่า Apps Script URL' };
+  try {
+    const resp = await fetch(url, {
+      method:'POST', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({
+        date:rec.date, time:rec.time, car:rec.car,
+        sender:rec.sender, receiver:rec.receiver,
+        qty:rec.qty, cond:rec.cond,
+        condCount:rec.condCount||'', condDetail:rec.condDetail||'',
+        readyCount:rec.readyCount||'', note:rec.note,
+        sigSender:rec.sigSender||'', sigReceiver:rec.sigReceiver||''
+      })
+    });
+    return resp.ok ? {ok:true} : {ok:false, msg:'Sheets ตอบกลับ: '+resp.status};
+  } catch(e) { return {ok:false, msg:'เชื่อมต่อไม่ได้'}; }
+}
+
+/* ── SAVE ── */
+async function saveRecord() {
+  const date = document.getElementById('f-date').value;
+  const car = getCarValue();
+  const sender = document.getElementById('f-sender').value.trim();
+  const receiver = document.getElementById('f-receiver').value.trim();
+  const qty = document.querySelector('input[name="qty"]:checked');
+  const cond = document.querySelector('input[name="cond"]:checked');
+  const errEl = document.getElementById('form-error');
+  const missing = [];
+  if (!date) missing.push('วันที่');
+  if (!car) missing.push('ทะเบียนรถ');
+  if (!sender) missing.push('ผู้ส่งมอบ');
+  if (!receiver) missing.push('ผู้รับมอบ');
+  if (missing.length) { errEl.textContent='กรุณากรอก: '+missing.join(', '); errEl.style.display='block'; return; }
+  errEl.style.display = 'none';
+  const rec = {
+    id: Date.now(), date, time: document.getElementById('f-time').value,
+    car, sender, receiver,
+    qty: qty ? qty.value : '', cond: cond ? cond.value : '',
+    condCount: document.getElementById('f-cond-count').value,
+    condDetail: document.getElementById('f-cond-detail').value.trim(),
+    readyCount: document.getElementById('f-ready-count').value,
+    note: document.getElementById('f-note').value.trim(),
+    sigSender: getSigData('sig-sender'), sigReceiver: getSigData('sig-receiver')
+  };
+  records.unshift(rec);
+  saveData();
+  const sEl = document.getElementById('sheets-status');
+  sEl.className='alert info'; sEl.style.display='block'; sEl.textContent='กำลังบันทึกลง Google Sheets...';
+  const result = await sendToSheet(rec);
+  if (result.ok) {
+    sEl.className='alert success'; sEl.textContent='✓ บันทึกลง Google Sheets สำเร็จ (รวมลายเซ็น)';
+    setTimeout(()=>sEl.style.display='none', 3000);
+  } else {
+    sEl.className='alert warn'; sEl.textContent='⚠ '+result.msg+' — ข้อมูลบันทึกในเครื่องแล้ว';
+  }
+  clearForm();
+  showToast('✓ บันทึกเรียบร้อยแล้ว');
+}
+function clearForm() {
+  ['f-sender','f-receiver','f-note','f-cond-count','f-cond-detail','f-ready-count'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('f-car-select').value='';
+  document.getElementById('f-car-other').value=''; document.getElementById('f-car-other').style.display='none';
+  document.querySelectorAll('input[name="qty"],input[name="cond"]').forEach(r=>r.checked=false);
+  document.getElementById('cond-detail-wrap').style.display='none';
+  document.getElementById('ready-detail-wrap').style.display='none';
+  document.getElementById('form-error').style.display='none';
+  clearSig('sig-sender'); clearSig('sig-receiver');
+  document.getElementById('f-date').value = new Date().toISOString().slice(0,10);
+}
+
+/* ── PRINT ── */
+function printRecord(id) {
+  const r = records.find(x => x.id===id);
+  if (!r) return;
+  document.getElementById('p-date').textContent = r.date;
+  document.getElementById('p-time').textContent = r.time+' น.';
+  document.getElementById('p-car').textContent = r.car||'-';
+  document.getElementById('p-qty').textContent = r.qty||'-';
+  document.getElementById('p-cond').textContent = r.cond
+    + (r.cond==='ชำรุด'&&r.condCount?' ('+r.condCount+' ชิ้น)':'')
+    + (r.cond==='พร้อมใช้งาน'&&r.readyCount?' ('+r.readyCount+' ชิ้น)':'');
+  document.getElementById('p-note').textContent = r.note||'-';
+  document.getElementById('p-sender').textContent = r.sender;
+  document.getElementById('p-receiver').textContent = r.receiver;
+  const br = document.getElementById('p-broken-row');
+  if (r.cond==='ชำรุด'&&r.condDetail) { br.style.display=''; document.getElementById('p-broken').textContent=r.condDetail; }
+  else br.style.display='none';
+  document.getElementById('p-sig-sender').innerHTML = r.sigSender
+    ? `<img src="${r.sigSender}" style="max-height:55px;max-width:100%">`
+    : '<span style="color:#999;font-size:12px">ไม่มีลายเซ็น</span>';
+  document.getElementById('p-sig-receiver').innerHTML = r.sigReceiver
+    ? `<img src="${r.sigReceiver}" style="max-height:55px;max-width:100%">`
+    : '<span style="color:#999;font-size:12px">ไม่มีลายเซ็น</span>';
+  window.print();
+}
+function printAll() {
+  const f = getFiltered();
+  if (!f.length) { showToast('ไม่มีรายการให้พิมพ์'); return; }
+  printRecord(f[0].id);
+}
+
+/* ── DELETE ── */
+function deleteRecord(id) {
+  if (!confirm('ต้องการลบรายการนี้?')) return;
+  records = records.filter(r => r.id!==id);
+  saveData(); renderHistory(); showToast('ลบรายการแล้ว');
+}
+
+/* ── HISTORY ── */
+function getFiltered() {
+  const q = (document.getElementById('search-box').value||'').toLowerCase();
+  return records.filter(r => (r.date+r.car+r.sender+r.receiver+r.note).toLowerCase().includes(q));
+}
+function renderHistory() {
+  const filtered = getFiltered();
+  const el = document.getElementById('history-list');
+  if (!filtered.length) { el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--gray-500)">ยังไม่มีรายการ</div>'; return; }
+  el.innerHTML = filtered.map(r => {
+    const isWarn = r.qty==='ไม่ครบ'||r.cond==='ชำรุด';
+    const sc = isWarn?'var(--orange)':'var(--green)';
+    const sb = isWarn?'var(--orange-light)':'var(--green-light)';
+    const condInfo = r.cond==='ชำรุด'?(r.condCount?` (${r.condCount} ชิ้น)`:'')+(r.condDetail?': '+r.condDetail:''):'';
+    const readyInfo = r.cond==='พร้อมใช้งาน'&&r.readyCount?` (${r.readyCount} ชิ้น)`:'';
+    const sigs = (r.sigSender||r.sigReceiver) ? `
+      <div class="record-sigs">
+        ${r.sigSender?`<div class="sig-thumb"><span>ลายเซ็นผู้ส่งมอบ</span><img src="${r.sigSender}"></div>`:''}
+        ${r.sigReceiver?`<div class="sig-thumb"><span>ลายเซ็นผู้รับมอบ</span><img src="${r.sigReceiver}"></div>`:''}
+      </div>` : '';
+    return `<div class="record-card">
+      <div class="record-header">
+        <div style="flex:1">
+          <div class="record-meta">
+            <span style="font-weight:600;font-size:14px">${r.date} ${r.time} น.</span>
+            ${r.car?`<span class="badge" style="background:var(--red-light);color:var(--red-dark)">🚗 ${r.car}</span>`:''}
+            <span class="badge" style="background:${sb};color:${sc}">${isWarn?'⚠ ต้องตรวจสอบ':'✓ ปกติ'}</span>
+          </div>
+          <div class="record-info">
+            <span>↑ ส่ง: <strong>${r.sender||'-'}</strong></span>
+            <span>↓ รับ: <strong>${r.receiver||'-'}</strong></span>
+            ${r.qty?`<span>จำนวน: ${r.qty}</span>`:''}
+            ${r.cond?`<span>สภาพ: ${r.cond}${condInfo}${readyInfo}</span>`:''}
+          </div>
+          ${r.note?`<div class="record-note">📝 ${r.note}</div>`:''}
+          ${sigs}
+        </div>
+        <div class="record-btns">
+          <button style="background:var(--blue);color:white" onclick="printRecord(${r.id})">🖨️ พิมพ์</button>
+          <button style="background:var(--gray-100);color:var(--gray-700);border:0.5px solid var(--gray-300)" onclick="deleteRecord(${r.id})">🗑 ลบ</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── EXPORT ── */
+function exportCSV() {
+  if (!records.length) { showToast('ไม่มีข้อมูล'); return; }
+  const h = ['วันที่','เวลา','ทะเบียนรถ','ผู้ส่งมอบ','ผู้รับมอบ','จำนวน','สภาพ','ชำรุดจำนวน','รายการชำรุด','พร้อมใช้จำนวน','หมายเหตุ'];
+  const rows = records.map(r => [r.date,r.time,r.car,r.sender,r.receiver,r.qty,r.cond,r.condCount||'',r.condDetail||'',r.readyCount||'',r.note].map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(','));
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF'+h.join(',')+'\n'+rows.join('\n')],{type:'text/csv;charset=utf-8;'}));
+  a.download = 'รับ-ส่งมอบแก้ไฟ.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  showToast('✓ ส่งออก CSV แล้ว');
+}
+
+/* ── TOAST ── */
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent=msg; t.style.display='block';
+  setTimeout(()=>t.style.display='none', 2500);
+}
+
+/* ── INIT ── */
+loadData();
+document.getElementById('f-date').value = new Date().toISOString().slice(0,10);
+setTimeout(() => { initSig('sig-sender'); initSig('sig-receiver'); }, 100);
+</script>
+</body>
+</html>
