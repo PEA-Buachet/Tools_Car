@@ -91,21 +91,19 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);curs
 /* HISTORY */
 .history-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:10px;border-bottom:0.5px solid var(--gray-200);flex-wrap:wrap;gap:8px}
 .history-toolbar input{padding:6px 10px;border:0.5px solid var(--gray-300);border-radius:var(--radius);font-size:13px;font-family:inherit;width:160px}
-.history-actions{display:flex;gap:8px}
-.history-actions button{border:none;border-radius:var(--radius);padding:6px 12px;font-size:13px;font-family:inherit;cursor:pointer}
+.badge{font-size:11px;padding:2px 7px;border-radius:4px;font-weight:500;white-space:nowrap}
 
-.record-card{border:0.5px solid var(--gray-200);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;background:var(--gray-100)}
-.record-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
-.record-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
-.badge{font-size:12px;padding:2px 8px;border-radius:4px;font-weight:500}
-.record-info{font-size:13px;color:var(--gray-700);display:grid;grid-template-columns:1fr 1fr;gap:3px}
-.record-note{margin-top:5px;font-size:12px;color:var(--gray-500)}
-.record-sigs{display:flex;gap:16px;margin-top:8px;padding-top:8px;border-top:0.5px solid var(--gray-300)}
-.sig-thumb{display:flex;flex-direction:column;gap:2px}
-.sig-thumb span{font-size:11px;color:var(--gray-500)}
-.sig-thumb img{height:44px;border:0.5px solid var(--gray-300);border-radius:4px;background:#fff}
-.record-btns{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
-.record-btns button{border:none;border-radius:var(--radius);padding:5px 10px;font-size:12px;font-family:inherit;cursor:pointer}
+/* History table */
+.htable-wrap{overflow-x:auto}
+.htable{width:100%;border-collapse:collapse;font-size:12px;min-width:700px}
+.htable th{background:var(--red);color:white;padding:7px 8px;text-align:center;font-weight:600;border:1px solid #a93226;white-space:nowrap;position:sticky;top:0}
+.htable td{padding:5px 8px;border:0.5px solid var(--gray-300);vertical-align:middle;background:white}
+.htable tr:nth-child(even) td{background:#FAFBFC}
+.htable tr:hover td{background:#EAF4FB}
+.htable .sig-cell{text-align:center;min-width:70px}
+.htable .sig-cell img{height:32px;max-width:70px;display:block;margin:auto;background:#fff;border:0.5px solid var(--gray-300);border-radius:3px}
+.htable .act-cell{white-space:nowrap;text-align:center}
+.htable .act-cell button{border:none;border-radius:4px;padding:3px 8px;font-size:11px;font-family:inherit;cursor:pointer;margin:1px}
 
 /* TOAST */
 #toast{display:none;position:fixed;bottom:20px;right:20px;background:var(--gray-900);color:white;padding:10px 16px;border-radius:var(--radius);font-size:13px;z-index:9999;max-width:300px;box-shadow:0 4px 16px rgba(0,0,0,0.3)}
@@ -115,24 +113,18 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);curs
   body{background:white}
   #no-print{display:none!important}
   #print-area{display:block!important}
-  .print-record{page-break-inside:avoid;break-inside:avoid}
-  .print-record+.print-record{margin-top:18px;padding-top:18px;border-top:2px dashed #ccc}
 }
-#print-area{display:none;font-family:'Sarabun',sans-serif;padding:16px;max-width:720px;margin:auto}
-.print-doc-header{text-align:center;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:16px}
-.print-doc-header h2{font-size:16px;font-weight:700}
-.print-doc-header p{font-size:12px}
-.print-doc-meta{font-size:12px;color:#555;margin-top:4px}
-.print-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px}
-.print-table td{padding:4px 7px;border:1px solid #999}
-.print-table td.th{background:#f0f0f0;font-weight:600;width:22%}
-.print-sig-row{display:flex;gap:0;border:1px solid #999;border-top:none}
-.print-sig-cell{flex:1;padding:7px 10px;text-align:center;border-right:1px solid #999}
-.print-sig-cell:last-child{border-right:none}
-.print-sig-cell .sig-title{font-weight:600;font-size:12px;margin-bottom:4px}
-.print-sig-cell .sig-img{height:52px;display:flex;align-items:center;justify-content:center;margin-bottom:4px}
-.print-sig-cell .sig-img img{max-height:50px;max-width:100%}
-.print-sig-cell .sig-name{border-top:1px solid #ccc;padding-top:4px;font-size:12px}
+#print-area{display:none;font-family:'Sarabun',sans-serif;padding:12px}
+.print-doc-header{text-align:center;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:10px}
+.print-doc-header h2{font-size:15px;font-weight:700}
+.print-doc-header p{font-size:11px}
+.print-doc-meta{font-size:11px;color:#555;margin-top:3px}
+.ptable{width:100%;border-collapse:collapse;font-size:10px}
+.ptable th{background:#1a2332;color:white;padding:5px 5px;text-align:center;font-weight:600;border:1px solid #555;white-space:nowrap}
+.ptable td{padding:4px 5px;border:1px solid #999;vertical-align:middle;text-align:center}
+.ptable tr:nth-child(even) td{background:#f9f9f9}
+.ptable .sig-img{max-height:36px;max-width:65px;display:block;margin:auto}
+.ptable .left{text-align:left}
 
 /* RESPONSIVE */
 @media(max-width:520px){
@@ -149,7 +141,7 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);curs
 <div id="print-area">
   <div class="print-doc-header">
     <h2>แบบฟอร์มรับ-ส่งมอบเครื่องมือประจำรถแก้ไฟ</h2>
-    <p>FM-ฉ.3-94 | การไฟฟ้าส่วนภูมิภาค</p>
+    <p>FM-ฉ.3-94 | การไฟฟ้าส่วนภูมิภาค สาขาบัวเชด</p>
     <div class="print-doc-meta" id="print-meta"></div>
   </div>
   <div id="print-records"></div>
@@ -164,7 +156,7 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);curs
     <div class="header-icon">🔥</div>
     <div>
       <h1>ระบบรับ-ส่งมอบเครื่องมือประจำรถแก้ไฟ</h1>
-      <p>FM-ฉ.3-94 | การไฟฟ้าส่วนภูมิภาค</p>
+      <p>FM-ฉ.3-94 | การไฟฟ้าส่วนภูมิภาค สาขาบัวเชด</p>
     </div>
     <div class="header-btns">
       <button class="btn-tab active" id="btn-form" onclick="showView('form')">+ บันทึกใหม่</button>
@@ -314,6 +306,36 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);curs
   </div>
 
 </div>
+</div>
+
+<!-- RAINBOW FOOTER -->
+<div style="margin-top:2rem;padding:1.5rem 16px;text-align:center;background:linear-gradient(to bottom,transparent,rgba(0,0,0,0.02))">
+  <div class="rainbow-text" style="font-size:14px;font-weight:600;letter-spacing:1px">
+    ⚡️ Design & System by PEA Buachet เขตชายแดน ⚡️
+  </div>
+</div>
+
+<style>
+@keyframes rainbow-flow {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+.rainbow-text {
+  background: linear-gradient(90deg, 
+    #ff0000 0%, #ff7f00 16.66%, #ffff00 33.33%, 
+    #00ff00 50%, #0000ff 66.66%, #4b0082 83.33%, #9400d3 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow-flow 3s linear infinite;
+  font-family: 'Sarabun', sans-serif;
+}
+@media(max-width:480px) {
+  .rainbow-text { font-size: 12px; }
+}
+</style>
+
 </div><!-- end no-print -->
 
 <div id="toast"></div>
@@ -473,49 +495,64 @@ function clearForm() {
 }
 
 /* ── PRINT ── */
-function buildPrintRecord(r) {
-  const condInfo = r.cond==='ชำรุด'?(r.condCount?` (${r.condCount} ชิ้น)`:'')+(r.condDetail?': '+r.condDetail:''):'';
-  const readyInfo = r.cond==='พร้อมใช้งาน'&&r.readyCount?` (${r.readyCount} ชิ้น)`:'';
-  const brokenRow = (r.cond==='ชำรุด'&&r.condDetail)
-    ? `<tr><td class="th">รายการชำรุด</td><td colspan="3">${r.condDetail}</td></tr>` : '';
-  return `<div class="print-record">
-    <table class="print-table">
-      <tr><td class="th">วันที่</td><td>${r.date}</td><td class="th">เวลา</td><td>${r.time} น.</td></tr>
-      <tr><td class="th">ทะเบียนรถ</td><td colspan="3">${r.car||'-'}</td></tr>
-      <tr><td class="th">จำนวนเครื่องมือ</td><td>${r.qty||'-'}</td><td class="th">สภาพ</td><td>${(r.cond||'-')+condInfo+readyInfo}</td></tr>
-      ${brokenRow}
-      <tr><td class="th">หมายเหตุ</td><td colspan="3" style="min-height:28px">${r.note||'-'}</td></tr>
-    </table>
-    <div class="print-sig-row">
-      <div class="print-sig-cell">
-        <div class="sig-title">ผู้ส่งมอบ</div>
-        <div class="sig-img">${r.sigSender?`<img src="${r.sigSender}">`:'<span style="color:#bbb;font-size:11px">ไม่มีลายเซ็น</span>'}</div>
-        <div class="sig-name">ชื่อ: ${r.sender||'-'}</div>
-      </div>
-      <div class="print-sig-cell">
-        <div class="sig-title">ผู้รับมอบ</div>
-        <div class="sig-img">${r.sigReceiver?`<img src="${r.sigReceiver}">`:'<span style="color:#bbb;font-size:11px">ไม่มีลายเซ็น</span>'}</div>
-        <div class="sig-name">ชื่อ: ${r.receiver||'-'}</div>
-      </div>
-    </div>
-  </div>`;
+function buildPrintRow(r) {
+  const condInfo = r.cond==='ชำรุด'?(r.condCount?` (${r.condCount})`:'')+(r.condDetail?'<br><small>'+r.condDetail+'</small>':''):'';
+  const readyInfo = r.cond==='พร้อมใช้งาน'&&r.readyCount?` (${r.readyCount})`:'';
+  return `<tr>
+    <td>${r.date}</td>
+    <td>${r.time}</td>
+    <td>${r.car||'-'}</td>
+    <td class="left">${r.sender||'-'}</td>
+    <td class="sig-cell">${r.sigSender?`<img class="sig-img" src="${r.sigSender}">`:'-'}</td>
+    <td class="left">${r.receiver||'-'}</td>
+    <td class="sig-cell">${r.sigReceiver?`<img class="sig-img" src="${r.sigReceiver}">`:'-'}</td>
+    <td>${r.qty||'-'}</td>
+    <td>${r.cond||'-'}${condInfo}${readyInfo}</td>
+    <td>${r.condCount||'-'}</td>
+    <td class="left">${r.condDetail||'-'}</td>
+    <td>${r.readyCount||'-'}</td>
+    <td class="left">${r.note||'-'}</td>
+  </tr>`;
 }
 
 function printRecord(id) {
   const r = records.find(x => x.id===id);
   if (!r) return;
   document.getElementById('print-meta').textContent = 'พิมพ์: 1 รายการ';
-  document.getElementById('print-records').innerHTML = buildPrintRecord(r);
+  document.getElementById('print-records').innerHTML = `
+    <table class="ptable">
+      <thead><tr>
+        <th>วันที่</th><th>เวลา</th><th>ทะเบียนรถ</th>
+        <th>ผู้ส่งมอบ</th><th>ลายเซ็น</th>
+        <th>ผู้รับมอบ</th><th>ลายเซ็น</th>
+        <th>จำนวน</th><th>สภาพ</th>
+        <th>ชำรุด<br>จำนวน</th><th>รายการชำรุด</th>
+        <th>พร้อมใช้<br>จำนวน</th><th>หมายเหตุ</th>
+      </tr></thead>
+      <tbody>${buildPrintRow(r)}</tbody>
+    </table>`;
   window.print();
 }
+
 function printAll() {
   const f = getFiltered();
   if (!f.length) { showToast('ไม่มีรายการให้พิมพ์'); return; }
   const q = (document.getElementById('search-box').value||'').trim();
   document.getElementById('print-meta').textContent = q
     ? `ค้นหา: "${q}" — พบ ${f.length} รายการ | พิมพ์: ${new Date().toLocaleDateString('th-TH')}`
-    : `พิมพ์ทั้งหมด ${f.length} รายการ | ${new Date().toLocaleDateString('th-TH')}`;
-  document.getElementById('print-records').innerHTML = f.map(buildPrintRecord).join('');
+    : `ทั้งหมด ${f.length} รายการ | ${new Date().toLocaleDateString('th-TH')}`;
+  document.getElementById('print-records').innerHTML = `
+    <table class="ptable">
+      <thead><tr>
+        <th>วันที่</th><th>เวลา</th><th>ทะเบียนรถ</th>
+        <th>ผู้ส่งมอบ</th><th>ลายเซ็น</th>
+        <th>ผู้รับมอบ</th><th>ลายเซ็น</th>
+        <th>จำนวน</th><th>สภาพ</th>
+        <th>ชำรุด<br>จำนวน</th><th>รายการชำรุด</th>
+        <th>พร้อมใช้<br>จำนวน</th><th>หมายเหตุ</th>
+      </tr></thead>
+      <tbody>${f.map(buildPrintRow).join('')}</tbody>
+    </table>`;
   window.print();
 }
 
@@ -535,47 +572,52 @@ function renderHistory() {
   const filtered = getFiltered();
   const el = document.getElementById('history-list');
   if (!filtered.length) { el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--gray-500)">ยังไม่มีรายการ</div>'; return; }
-  el.innerHTML = filtered.map(r => {
+  const rows = filtered.map(r => {
     const isWarn = r.qty==='ไม่ครบ'||r.cond==='ชำรุด';
     const sc = isWarn?'var(--orange)':'var(--green)';
     const sb = isWarn?'var(--orange-light)':'var(--green-light)';
-    const condInfo = r.cond==='ชำรุด'?(r.condCount?` (${r.condCount} ชิ้น)`:'')+(r.condDetail?': '+r.condDetail:''):'';
-    const readyInfo = r.cond==='พร้อมใช้งาน'&&r.readyCount?` (${r.readyCount} ชิ้น)`:'';
-    const sigSenderHtml = r.sigSender
-      ? `<img src="${r.sigSender}" style="height:36px;border:0.5px solid var(--gray-300);border-radius:4px;background:#fff;vertical-align:middle;margin-left:8px">`
-      : '';
-    const sigReceiverHtml = r.sigReceiver
-      ? `<img src="${r.sigReceiver}" style="height:36px;border:0.5px solid var(--gray-300);border-radius:4px;background:#fff;vertical-align:middle;margin-left:8px">`
-      : '';
-    return `<div class="record-card">
-      <div class="record-header">
-        <div style="flex:1">
-          <div class="record-meta">
-            <span style="font-weight:600;font-size:14px">${r.date} ${r.time} น.</span>
-            ${r.car?`<span class="badge" style="background:var(--red-light);color:var(--red-dark)">🚗 ${r.car}</span>`:''}
-            <span class="badge" style="background:${sb};color:${sc}">${isWarn?'⚠ ต้องตรวจสอบ':'✓ ปกติ'}</span>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:4px">
-            <div style="display:flex;align-items:center;font-size:13px;color:var(--gray-700)">
-              <span>↑ ส่ง: <strong>${r.sender||'-'}</strong></span>${sigSenderHtml}
-            </div>
-            <div style="display:flex;align-items:center;font-size:13px;color:var(--gray-700)">
-              <span>↓ รับ: <strong>${r.receiver||'-'}</strong></span>${sigReceiverHtml}
-            </div>
-          </div>
-          <div class="record-info">
-            ${r.qty?`<span>จำนวน: ${r.qty}</span>`:'<span></span>'}
-            ${r.cond?`<span>สภาพ: ${r.cond}${condInfo}${readyInfo}</span>`:'<span></span>'}
-          </div>
-          ${r.note?`<div class="record-note">📝 ${r.note}</div>`:''}
+    const condInfo = r.cond==='ชำรุด'?(r.condCount?` (${r.condCount})`:'')+(r.condDetail?': '+r.condDetail:''):'';
+    const readyInfo = r.cond==='พร้อมใช้งาน'&&r.readyCount?` (${r.readyCount})`:'';
+    return `<tr>
+      <td style="white-space:nowrap;font-weight:500">${r.date}</td>
+      <td style="white-space:nowrap">${r.time}</td>
+      <td style="white-space:nowrap">${r.car||'-'}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:13px;white-space:nowrap">${r.sender||'-'}</span>
+          ${r.sigSender?`<img src="${r.sigSender}" style="height:30px;max-width:70px;border:0.5px solid var(--gray-300);border-radius:3px;background:#fff;flex-shrink:0">`:
+            '<span style="font-size:11px;color:var(--gray-400)">-</span>'}
         </div>
-        <div class="record-btns">
-          <button style="background:var(--blue);color:white" onclick="printRecord(${r.id})">🖨️ พิมพ์</button>
-          <button style="background:var(--gray-100);color:var(--gray-700);border:0.5px solid var(--gray-300)" onclick="deleteRecord(${r.id})">🗑 ลบ</button>
+      </td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:13px;white-space:nowrap">${r.receiver||'-'}</span>
+          ${r.sigReceiver?`<img src="${r.sigReceiver}" style="height:30px;max-width:70px;border:0.5px solid var(--gray-300);border-radius:3px;background:#fff;flex-shrink:0">`:
+            '<span style="font-size:11px;color:var(--gray-400)">-</span>'}
         </div>
-      </div>
-    </div>`;
+      </td>
+      <td style="text-align:center">${r.qty||'-'}</td>
+      <td>
+        <span class="badge" style="background:${sb};color:${sc}">${r.cond||'-'}</span>
+        ${condInfo?`<span style="font-size:11px;color:var(--gray-500)">${condInfo}</span>`:''}
+        ${readyInfo?`<span style="font-size:11px;color:var(--green)">${readyInfo}</span>`:''}
+      </td>
+      <td style="font-size:12px;color:var(--gray-500)">${r.note||''}</td>
+      <td class="act-cell">
+        <button style="background:var(--blue);color:white" onclick="printRecord(${r.id})">🖨️</button>
+        <button style="background:var(--red-light);color:var(--red-dark)" onclick="deleteRecord(${r.id})">🗑</button>
+      </td>
+    </tr>`;
   }).join('');
+  el.innerHTML = `<div class="htable-wrap"><table class="htable">
+    <thead><tr>
+      <th>วันที่</th><th>เวลา</th><th>ทะเบียนรถ</th>
+      <th>ผู้ส่งมอบ / ลายเซ็น</th>
+      <th>ผู้รับมอบ / ลายเซ็น</th>
+      <th>จำนวน</th><th>สภาพ</th><th>หมายเหตุ</th><th></th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>`;
 }
 
 /* ── EXPORT ── */
