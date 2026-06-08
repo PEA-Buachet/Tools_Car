@@ -141,7 +141,7 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);curs
 <div id="print-area">
   <div class="print-doc-header">
     <h2>แบบฟอร์มรับ-ส่งมอบเครื่องมือประจำรถแก้ไฟ</h2>
-    <p>FM-ฉ.3-94 | การไฟฟ้าส่วนภูมิภาค สาขาบัวเชด</p>
+    <p>FM-ฉ.3-94 | การไฟฟ้าส่วนภูมิภาค</p>
     <div class="print-doc-meta" id="print-meta"></div>
   </div>
   <div id="print-records"></div>
@@ -156,7 +156,7 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);curs
     <div class="header-icon">🔥</div>
     <div>
       <h1>ระบบรับ-ส่งมอบเครื่องมือประจำรถแก้ไฟ</h1>
-      <p>FM-ฉ.3-94 | การไฟฟ้าส่วนภูมิภาค สาขาบัวเชด</p>
+      <p>FM-ฉ.3-94 | การไฟฟ้าส่วนภูมิภาค</p>
     </div>
     <div class="header-btns">
       <button class="btn-tab active" id="btn-form" onclick="showView('form')">+ บันทึกใหม่</button>
@@ -184,13 +184,8 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);curs
     </div>
   </div>
 
-  <!-- APPS SCRIPT SETUP -->
-  <div class="setup-bar">
-    <label>🔗 Apps Script URL:</label>
-    <input type="text" id="script-url" placeholder="วาง Web App URL จาก Google Apps Script ที่นี่...">
-    <button onclick="saveScriptUrl()">บันทึก URL</button>
-    <span id="url-saved" style="font-size:12px;color:var(--green);display:none">✓ บันทึกแล้ว</span>
-  </div>
+  <!-- APPS SCRIPT - Auto configured -->
+  <div style="display:none" id="script-config"></div>
 
   <!-- FORM VIEW -->
   <div class="card" id="view-form">
@@ -343,13 +338,12 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);curs
 <script>
 const STORAGE_KEY = 'fire_tool_records_v3';
 const SCRIPT_URL_KEY = 'fire_tool_script_url';
+const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwBXaxbXnINf7fDo8V4XJAX9tYcT8pKhs5j4BM0VPUetuo5MAF5x-DOMKSkY7Wl0Uw/exec';
 let records = [];
 
 /* ── DATA ── */
 function loadData() {
   try { records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch(e) { records = []; }
-  const url = localStorage.getItem(SCRIPT_URL_KEY) || '';
-  if (url) { document.getElementById('script-url').value = url; document.getElementById('url-saved').style.display = 'inline'; }
   updateStats();
 }
 function saveData() {
@@ -362,14 +356,6 @@ function updateStats() {
   document.getElementById('stat-ok').textContent = records.filter(r => r.qty==='ครบ' && r.cond==='พร้อมใช้งาน').length;
   document.getElementById('stat-warn').textContent = records.filter(r => r.qty==='ไม่ครบ' || r.cond==='ชำรุด').length;
   document.getElementById('stat-today').textContent = records.filter(r => r.date===today).length;
-}
-function saveScriptUrl() {
-  const url = document.getElementById('script-url').value.trim();
-  localStorage.setItem(SCRIPT_URL_KEY, url);
-  const el = document.getElementById('url-saved');
-  el.style.display = 'inline';
-  setTimeout(() => el.style.display = 'none', 2000);
-  showToast('✓ บันทึก URL แล้ว');
 }
 
 /* ── UI ── */
@@ -424,10 +410,8 @@ function getSigData(id) { return isSigEmpty(id) ? '' : document.getElementById(i
 
 /* ── SHEETS ── */
 async function sendToSheet(rec) {
-  const url = localStorage.getItem(SCRIPT_URL_KEY) || document.getElementById('script-url').value.trim();
-  if (!url) return { ok:false, msg:'ยังไม่ได้ตั้งค่า Apps Script URL' };
   try {
-    const resp = await fetch(url, {
+    const resp = await fetch(DEFAULT_SCRIPT_URL, {
       method:'POST', headers:{'Content-Type':'text/plain'},
       body: JSON.stringify({
         date:rec.date, time:rec.time, car:rec.car,
