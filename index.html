@@ -155,8 +155,8 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);widt
     <div class="field">
       <label>สภาพเครื่องมือ <span>*</span></label>
       <div style="display:flex;gap:12px;margin-top:8px">
-        <label><input type="radio" name="cond" id="cond-ok" value="พร้อมใช้งาน" onchange="toggleCondDetail()"> พร้อมใช้งาน</label>
-        <label><input type="radio" name="cond" id="cond-broken" value="ชำรุด" onchange="toggleCondDetail()"> ชำรุด</label>
+        <label><input type="checkbox" name="cond" id="cond-ok" value="พร้อมใช้งาน" onchange="toggleCondDetail()"> พร้อมใช้งาน</label>
+        <label><input type="checkbox" name="cond" id="cond-broken" value="ชำรุด" onchange="toggleCondDetail()"> ชำรุด</label>
       </div>
       <div id="cond-detail-wrap" style="display:none;margin-top:8px">
         <input type="number" id="f-cond-count" placeholder="จำนวนชิ้นที่ชำรุด *" min="0" style="margin-bottom:6px;border:0.5px solid var(--orange)">
@@ -232,17 +232,32 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);widt
   </div>
 </div>
 
+<!-- กล่องโต้ตอบแบบกำหนดเองสำหรับการแจ้งเตือนบันทึกสำเร็จ (Centered Modal) -->
+<div id="success-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div style="font-size: 3rem; margin-bottom: 8px;">🎉</div>
+    <div class="modal-title" style="color:var(--green); font-size:18px;">บันทึกข้อมูลสำเร็จ!</div>
+    <div class="modal-body" id="success-modal-text" style="font-size:13.5px; margin-bottom:16px; line-height:1.5; color:var(--gray-700)">ระบบได้รับการบันทึกข้อมูลส่งมอบเรียบร้อยแล้ว</div>
+    
+    <div style="display:flex; justify-content:center;">
+      <button class="btn btn-primary" onclick="closeSuccessModal()" style="padding:8px 24px; font-size:14px; background-color:var(--green); border-radius:var(--radius)">ตกลง</button>
+    </div>
+  </div>
+</div>
+
 <div style="margin-top:2rem;padding:1.5rem 16px;text-align:center;background:linear-gradient(to bottom,transparent,rgba(0,0,0,0.02))">
   <div class="rainbow-text" style="font-size:14px;font-weight:600;letter-spacing:1px">⚡️ Design & System by PEA Buachet เขตชายแดน ⚡️</div>
 </div>
 
 <div id="toast" style="display:none;position:fixed;bottom:20px;right:20px;background:#1A2332;color:white;padding:10px 16px;border-radius:8px;font-size:13px;z-index:9999"></div>
 
+
+
 <script>
 const STORAGE_KEY = 'fire_tool_records_v3';
 
 // กำหนด URL ของ Google Apps Script สำหรับใช้เป็นช่องทางสำรองกรณีกดรันจากคอมพิวเตอร์ข้างนอกโดยตรง
-const SCRIPT_URL = window.location.href.indexOf('exec') !== -1 ? window.location.href : 'https://script.google.com/macros/s/AKfycbwJaSCCmWGedv7tFmB27mx5AiZJ2D54q4PafmuJbWT7a79wCeQCih41yTO2GftlSvk/exec';
+const SCRIPT_URL = window.location.href.indexOf('exec') !== -1 ? window.location.href : 'https://script.google.com/macros/s/AKfycbxDvZ_JbWZreJOi48hKiRFnmnDifOSH-KFxHBLt4Ez5Te5Tcxb6UWGwALDsKApUQAM/exec';
 
 let records = [];
 let deleteTargetId = null; 
@@ -301,7 +316,9 @@ function saveData() {
 async function syncDataFromServer() {
   const el = document.getElementById('history-list');
   const originalHtml = el.innerHTML;
-  el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--blue);font-weight:500;">🔄 กำลังดึงข้อมูลล่าสุดจาก Google Sheets ของส่วนกลาง...</div>';
+  
+  // แก้ไข: ไม่แสดงข้อความใดๆ (ปล่อยว่าง) ในช่วงที่กำลังดึงข้อมูล
+  el.innerHTML = '<div style="text-align:center;padding:2rem;"></div>';
   
   try {
     const resData = await callBackend({ action: 'read' });
@@ -323,11 +340,14 @@ async function syncDataFromServer() {
 function updateStats() {
   const today = new Date().toISOString().slice(0,10);
   document.getElementById('stat-total').textContent = records.length;
-  document.getElementById('stat-ok').textContent = records.filter(r => r.qty==='ครบ' && r.cond==='พร้อมใช้งาน').length;
-  document.getElementById('stat-warn').textContent = records.filter(r => r.qty==='ไม่ครบ' || r.cond==='ชำรุด').length;
+  // ครบ/พร้อม: ต้อง qty ครบ และ cond มี "พร้อมใช้งาน" โดยต้องไม่มีคำว่า "ชำรุด" ปนอยู่ด้วย
+  document.getElementById('stat-ok').textContent = records.filter(r => r.qty==='ครบ' && r.cond.includes('พร้อมใช้งาน') && !r.cond.includes('ชำรุด')).length;
+  // ชำรุด: qty ไม่ครบ หรือ cond มี "ชำรุด"
+  document.getElementById('stat-warn').textContent = records.filter(r => r.qty==='ไม่ครบ' || r.cond.includes('ชำรุด')).length;
   document.getElementById('stat-today').textContent = records.filter(r => r.date===today).length;
 }
 
+// (ฟังก์ชันเสริมอื่นๆ ทั้งหมดยังคงโครงสร้างเดิม)
 function toggleCarOther() {
   const sel = document.getElementById('f-car-select').value;
   const oth = document.getElementById('f-car-other');
@@ -505,13 +525,24 @@ function getSigData(id) {
   return isSigEmpty(id) ? '' : document.getElementById(id).toDataURL('image/png');
 }
 
+// ฟังก์ชันควบคุมโมดอลบันทึกสำเร็จ
+function showSuccessModal(msg) {
+  document.getElementById('success-modal-text').innerHTML = msg;
+  document.getElementById('success-modal').style.display = 'flex';
+}
+
+function closeSuccessModal() {
+  document.getElementById('success-modal').style.display = 'none';
+}
+
 async function saveRecord() {
   const date = document.getElementById('f-date').value;
   const car = getCarValue();
   const sender = getSenderValue();
   const receiver = getReceiverValue();
   const qty = document.querySelector('input[name="qty"]:checked');
-  const cond = document.querySelector('input[name="cond"]:checked');
+  const condOk = document.getElementById('cond-ok').checked;
+  const condBroken = document.getElementById('cond-broken').checked;
   const errEl = document.getElementById('form-error');
   const btnSave = document.getElementById('btn-save');
   
@@ -521,23 +552,22 @@ async function saveRecord() {
   if (!sender) missing.push('ผู้ส่งมอบ');
   if (!receiver) missing.push('ผู้รับมอบ');
   if (!qty) missing.push('จำนวนเครื่องมือ (ครบ/ไม่ครบ)');
-  if (!cond) missing.push('สภาพเครื่องมือ (พร้อมใช้งาน/ชำรุด)');
+  if (!condOk && !condBroken) missing.push('สภาพเครื่องมือ (พร้อมใช้งาน/ชำรุด)');
   
-  if (cond) {
-    if (cond.value === 'พร้อมใช้งาน') {
-      const readyCount = document.getElementById('f-ready-count').value;
-      if (!readyCount) {
-        missing.push('จำนวนชิ้นที่พร้อมใช้งาน');
-      }
-    } else if (cond.value === 'ชำรุด') {
-      const condCount = document.getElementById('f-cond-count').value;
-      const condDetail = document.getElementById('f-cond-detail').value.trim();
-      if (!condCount) {
-        missing.push('จำนวนชิ้นที่ชำรุด');
-      }
-      if (!condDetail) {
-        missing.push('รายการชำรุด');
-      }
+  if (condOk) {
+    const readyCount = document.getElementById('f-ready-count').value;
+    if (!readyCount) {
+      missing.push('จำนวนชิ้นที่พร้อมใช้งาน');
+    }
+  }
+  if (condBroken) {
+    const condCount = document.getElementById('f-cond-count').value;
+    const condDetail = document.getElementById('f-cond-detail').value.trim();
+    if (!condCount) {
+      missing.push('จำนวนชิ้นที่ชำรุด');
+    }
+    if (!condDetail) {
+      missing.push('รายการชำรุด');
     }
   }
   
@@ -549,11 +579,17 @@ async function saveRecord() {
   
   errEl.style.display = 'none';
   btnSave.disabled = true;
+
+  const selectedConds = [];
+  if (condOk) selectedConds.push('พร้อมใช้งาน');
+  if (condBroken) selectedConds.push('ชำรุด');
+  const condValue = selectedConds.join(', ');
   
   const rec = {
     date, time: document.getElementById('f-time').value,
     car, sender, receiver,
-    qty: qty ? qty.value : '', cond: cond ? cond.value : '',
+    qty: qty ? qty.value : '', 
+    cond: condValue,
     condCount: document.getElementById('f-cond-count').value,
     condDetail: document.getElementById('f-cond-detail').value.trim(),
     readyCount: document.getElementById('f-ready-count').value,
@@ -576,7 +612,7 @@ async function saveRecord() {
       setTimeout(() => sEl.style.display = 'none', 4000);
       
       clearForm();
-      showToast('✓ บันทึกข้อมูลเรียบร้อยแล้ว');
+      showSuccessModal('บันทึกข้อมูลการรับ-ส่งมอบเครื่องมือประจำรถแก้ไฟ ลงในระบบ Google Sheets ส่วนกลางสำเร็จเรียบร้อยแล้ว 🎉');
       await syncDataFromServer(); 
     } else {
       throw new Error(resData.message || 'เซิร์ฟเวอร์หลังบ้านส่งค่าผิดพลาด');
@@ -589,6 +625,7 @@ async function saveRecord() {
     records.unshift(rec);
     saveData();
     clearForm();
+    showSuccessModal('บันทึกข้อมูลแบบออฟไลน์สำเร็จแล้ว! 💾<br><span style="font-size:11.5px; color:var(--gray-500);">(เนื่องจากระบบติดต่อระบบคลาวด์ไม่ได้ ข้อมูลจึงสำรองไว้ที่เครื่องนี้ชั่วคราว)</span>');
   }
   
   btnSave.disabled = false;
@@ -606,7 +643,9 @@ function clearForm() {
   document.getElementById('f-receiver-other').value = '';
   document.getElementById('f-receiver-other').style.display = 'none';
   
-  document.querySelectorAll('input[name="qty"], input[name="cond"]').forEach(r => r.checked = false);
+  document.querySelectorAll('input[name="qty"]').forEach(r => r.checked = false);
+  document.getElementById('cond-ok').checked = false;
+  document.getElementById('cond-broken').checked = false;
   
   document.getElementById('cond-detail-wrap').style.display = 'none';
   document.getElementById('ready-detail-wrap').style.display = 'none';
@@ -668,8 +707,8 @@ async function confirmDelete() {
 }
 
 function buildPrintRow(r) {
-  const condInfo = r.cond === 'ชำรุด' ? (r.condCount ? ` (${r.condCount} ชิ้น)` : '') + (r.condDetail ? '<br><small>' + r.condDetail + '</small>' : '') : '';
-  const readyInfo = r.cond === 'พร้อมใช้งาน' && r.readyCount ? ` (${r.readyCount} ชิ้น)` : '';
+  const condInfo = r.cond.includes('ชำรุด') ? (r.condCount ? ` (${r.condCount} ชิ้น)` : '') + (r.condDetail ? '<br><small>' + r.condDetail + '</small>' : '') : '';
+  const readyInfo = r.cond.includes('พร้อมใช้งาน') && r.readyCount ? ` (${r.readyCount} ชิ้น)` : '';
   
   const sigSenderTag = r.sigSender ? `<img src="${r.sigSender}">` : '-';
   const sigReceiverTag = r.sigReceiver ? `<img src="${r.sigReceiver}">` : '-';
@@ -721,11 +760,16 @@ function renderHistory() {
     return;
   }
   const rows = filtered.map(r => {
-    const isWarn = r.qty === 'ไม่ครบ' || r.cond === 'ชำรุด';
+    const isWarn = r.qty === 'ไม่ครบ' || r.cond.includes('ชำรุด');
     const sc = isWarn ? 'var(--orange)' : 'var(--green)';
     const sb = isWarn ? 'var(--orange-light)' : 'var(--green-light)';
-    const condInfo = r.cond === 'ชำรุด' ? (r.condCount ? ` (${r.condCount})` : '') + (r.condDetail ? ': ' + r.condDetail : '') : '';
-    const readyInfo = r.cond === 'พร้อมใช้งาน' && r.readyCount ? ` (${r.readyCount})` : '';
+    
+    const condInfo = r.cond.includes('ชำรุด') ? (r.condCount ? ` (${r.condCount})` : '') + (r.condDetail ? ': ' + r.condDetail : '') : '';
+    const readyInfo = r.cond.includes('พร้อมใช้งาน') && r.readyCount ? ` (${r.readyCount})` : '';
+    
+    let condDisplayHTML = `<span style="background:${sb};color:${sc};padding:2px 7px;border-radius:4px;font-weight:500;font-size:11px">${r.cond || '-'}</span>`;
+    if (condInfo) condDisplayHTML += `<br><span style="font-size:11px;color:var(--orange)">ชำรุด ${condInfo}</span>`;
+    if (readyInfo) condDisplayHTML += `<br><span style="font-size:11px;color:var(--green)">พร้อมใช้ ${readyInfo}</span>`;
     
     return `<tr>
       <td>${r.date}</td>
@@ -745,9 +789,7 @@ function renderHistory() {
       </td>
       <td>${r.qty || '-'}</td>
       <td>
-        <span style="background:${sb};color:${sc};padding:2px 7px;border-radius:4px;font-weight:500;font-size:11px">${r.cond || '-'}</span>
-        ${condInfo ? '<br><span style="font-size:11px">' + condInfo + '</span>' : ''}
-        ${readyInfo ? '<br><span style="font-size:11px">พร้อม: ' + readyInfo + '</span>' : ''}
+        ${condDisplayHTML}
       </td>
       <td>${r.note || ''}</td>
       <td>
@@ -791,7 +833,6 @@ window.addEventListener('load', async () => {
     initSig('sig-receiver');
   }, 250);
 
-  // โหลดประวัติส่วนกลางจากชีตครั้งแรกที่หน้าจอเปิดทำงาน
   await syncDataFromServer();
 });
 </script>
