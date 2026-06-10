@@ -71,7 +71,7 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);widt
 <div id="print-area">
   <div style="text-align:center;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:10px">
     <h2 style="font-size:15px;font-weight:700">แบบฟอร์มรับ-ส่งมอบเครื่องมือประจำรถแก้ไฟ</h2>
-    <p style="font-size:11px">FM-ฉ.3-94 | การไฟฟ้าส่วนภูมิภาค</p>
+    <p style="font-size:11px">FM-ฉ.3-94 | การไฟฟ้าส่วนภูมิภาค สาขาบัวเชด</p>
     <div id="print-meta" style="font-size:11px;color:#555;margin-top:3px"></div>
   </div>
   <div id="print-records"></div>
@@ -101,7 +101,7 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);widt
 
   <div class="form-grid">
     <div class="field"><label>วันที่ <span>*</span></label><input type="date" id="f-date"></div>
-    <div class="field"><label>เวลา <span>*</span></label><select id="f-time"><option value="08:30 น. (กะเช้า)">08:30 น. (กะเช้า)</option><option value="00:30 น. (กะดึก)">00:30 น. (กะดึก)</option><option value="16:30 น. (กะบ่าย)">16:30 น. (กะบ่าย)</option></select></div>
+    <div class="field"><label>เวลา <span>*</span></label><select id="f-time"><option value="08:30 น.">08:30 น.</option><option value="00:30 น.">00:30 น.</option><option value="16:30 น.">16:30 น.</option></select></div>
   </div>
 
   <div class="form-grid full">
@@ -155,16 +155,18 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);widt
     <div class="field">
       <label>สภาพเครื่องมือ <span>*</span></label>
       <div style="display:flex;gap:12px;margin-top:8px">
-        <label><input type="checkbox" name="cond" id="cond-ok" value="พร้อมใช้งาน" onchange="toggleCondDetail()"> พร้อมใช้งาน</label>
+        <label><input type="checkbox" name="cond" id="cond-ok" value="พร้อมใช้งาน" onchange="toggleCondDetail()"> พร้อมใช้งาน
+        <div id="ready-detail-wrap" style="display:none;margin-top:8px">
+        <input type="number" id="f-ready-count" placeholder="จำนวนชิ้นที่พร้อมใช้งาน *" min="0" style="border:0.5px solid var(--green)">
+      </div>
+        </label>
         <label><input type="checkbox" name="cond" id="cond-broken" value="ชำรุด" onchange="toggleCondDetail()"> ชำรุด</label>
       </div>
       <div id="cond-detail-wrap" style="display:none;margin-top:8px">
         <input type="number" id="f-cond-count" placeholder="จำนวนชิ้นที่ชำรุด *" min="0" style="margin-bottom:6px;border:0.5px solid var(--orange)">
         <input type="text" id="f-cond-detail" placeholder="ระบุรายการที่ชำรุด *" style="border:0.5px solid var(--orange)">
       </div>
-      <div id="ready-detail-wrap" style="display:none;margin-top:8px">
-        <input type="number" id="f-ready-count" placeholder="จำนวนชิ้นที่พร้อมใช้งาน *" min="0" style="border:0.5px solid var(--green)">
-      </div>
+      
     </div>
   </div>
 
@@ -198,7 +200,7 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);widt
 
 <div class="card" id="view-history" style="display:none">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
-    <div style="font-size:15px;font-weight:600">📋 ประวัติการรับ-ส่งมอบ (จากระบบส่วนกลาง)</div>
+    <div style="font-size:15px;font-weight:600">📋 ประวัติการรับ-ส่งมอบ </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <input type="text" id="search-box" oninput="renderHistory()" placeholder="🔍 ค้นหา..." style="padding:6px 10px;border:0.5px solid var(--gray-300);border-radius:var(--radius);font-size:13px;width:160px">
       <button class="btn btn-blue" onclick="syncDataFromServer()" style="padding:6px 12px;font-size:13px;background:var(--blue)">🔄 ดึงข้อมูลใหม่</button>
@@ -217,7 +219,7 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);widt
   <div class="modal-card">
     <div style="font-size: 2.2rem; margin-bottom: 8px;">⚠️</div>
     <div class="modal-title">ยืนยันการลบข้อมูลประวัติ</div>
-    <div class="modal-body">เพื่อความปลอดภัยในการลบข้อมูล กรุณาป้อนรหัสผ่านเพื่อลบรายการนี้ออกจากระบบส่วนกลาง</div>
+    <div class="modal-body">เพื่อความปลอดภัยในการลบข้อมูล กรุณาป้อนรหัสผ่านเพื่อลบรายการนี้ออก</div>
     
     <input type="password" id="delete-pwd-input" placeholder="ป้อนรหัสผ่านเพื่อยืนยัน" 
            onkeypress="if(event.key === 'Enter') confirmDelete()"
@@ -235,7 +237,7 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);widt
 <!-- กล่องโต้ตอบแบบกำหนดเองสำหรับการแจ้งเตือนบันทึกสำเร็จ (Centered Modal) -->
 <div id="success-modal" class="modal-overlay">
   <div class="modal-card">
-    <div style="font-size: 3rem; margin-bottom: 8px;">🎉</div>
+    <div style="font-size: 3rem; margin-bottom: 8px;">✅</div>
     <div class="modal-title" style="color:var(--green); font-size:18px;">บันทึกข้อมูลสำเร็จ!</div>
     <div class="modal-body" id="success-modal-text" style="font-size:13.5px; margin-bottom:16px; line-height:1.5; color:var(--gray-700)">ระบบได้รับการบันทึกข้อมูลส่งมอบเรียบร้อยแล้ว</div>
     
@@ -257,7 +259,7 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);widt
 const STORAGE_KEY = 'fire_tool_records_v3';
 
 // กำหนด URL ของ Google Apps Script สำหรับใช้เป็นช่องทางสำรองกรณีกดรันจากคอมพิวเตอร์ข้างนอกโดยตรง
-const SCRIPT_URL = window.location.href.indexOf('exec') !== -1 ? window.location.href : 'https://script.google.com/macros/s/AKfycbxDvZ_JbWZreJOi48hKiRFnmnDifOSH-KFxHBLt4Ez5Te5Tcxb6UWGwALDsKApUQAM/exec';
+const SCRIPT_URL = window.location.href.indexOf('exec') !== -1 ? window.location.href : 'https://script.google.com/macros/s/AKfycbwntEFKn-6GX2NsPi5rWeJIWqdbQbHMnmykSxpGQl-9FxcYe6XSa9WPfSfbstsonz8/exec';
 
 let records = [];
 let deleteTargetId = null; 
@@ -301,6 +303,21 @@ function callBackend(payload) {
       });
     }
   });
+}
+
+// ฟังก์ชันแปลงรูปแบบวันที่จากปี ค.ศ. (YYYY-MM-DD) เป็นปี พ.ศ. (DD-MM-YYYY)
+function formatThaiDate(dateStr) {
+  if (!dateStr) return '-';
+  const parts = dateStr.split('-');
+  if (parts.length === 3) {
+    const year = parseInt(parts[0]);
+    // ถ้าปีที่ส่งมาน้อยกว่า 2500 ให้บวกเพิ่ม 543 เพื่อทำเป็น ปี พ.ศ.
+    const yearBE = year < 2500 ? year + 543 : year;
+    const month = parts[1];
+    const day = parts[2];
+    return `${day}-${month}-${yearBE}`;
+  }
+  return dateStr;
 }
 
 function loadData() {
@@ -347,7 +364,6 @@ function updateStats() {
   document.getElementById('stat-today').textContent = records.filter(r => r.date===today).length;
 }
 
-// (ฟังก์ชันเสริมอื่นๆ ทั้งหมดยังคงโครงสร้างเดิม)
 function toggleCarOther() {
   const sel = document.getElementById('f-car-select').value;
   const oth = document.getElementById('f-car-other');
@@ -398,8 +414,9 @@ function getReceiverValue() {
 function toggleCondDetail() {
   const isBroken = document.getElementById('cond-broken').checked;
   const isOk = document.getElementById('cond-ok').checked;
-  document.getElementById('cond-detail-wrap').style.display = isBroken ? 'block' : 'none';
   document.getElementById('ready-detail-wrap').style.display = isOk ? 'block' : 'none';
+  document.getElementById('cond-detail-wrap').style.display = isBroken ? 'block' : 'none';
+
 }
 
 function showView(v) {
@@ -590,9 +607,10 @@ async function saveRecord() {
     car, sender, receiver,
     qty: qty ? qty.value : '', 
     cond: condValue,
+    readyCount: document.getElementById('f-ready-count').value,
     condCount: document.getElementById('f-cond-count').value,
     condDetail: document.getElementById('f-cond-detail').value.trim(),
-    readyCount: document.getElementById('f-ready-count').value,
+
     note: document.getElementById('f-note').value.trim(),
     sigSender: getSigData('sig-sender'), sigReceiver: getSigData('sig-receiver')
   };
@@ -602,7 +620,7 @@ async function saveRecord() {
   sEl.className = 'alert';
   sEl.style.background = '#EAF4FB';
   sEl.style.color = '#1A5276';
-  sEl.textContent = 'กำลังบันทึกลง Google Sheets และประมวลผลระบบส่วนกลาง...';
+  sEl.textContent = 'กำลังบันทึกลง Google Sheets และประมวลผลระบบ';
   
   try {
     const resData = await callBackend(rec);
@@ -612,27 +630,27 @@ async function saveRecord() {
       setTimeout(() => sEl.style.display = 'none', 4000);
       
       clearForm();
-      showSuccessModal('บันทึกข้อมูลการรับ-ส่งมอบเครื่องมือประจำรถแก้ไฟ ลงในระบบ Google Sheets ส่วนกลางสำเร็จเรียบร้อยแล้ว 🎉');
+      showSuccessModal('บันทึกข้อมูลการรับ-ส่งมอบเครื่องมือประจำรถแก้ไฟ ลงในระบบ Google Sheets 🎉');
       await syncDataFromServer(); 
     } else {
       throw new Error(resData.message || 'เซิร์ฟเวอร์หลังบ้านส่งค่าผิดพลาด');
     }
   } catch (err) {
     sEl.className = 'alert warn';
-    sEl.textContent = '⚠ ' + err.message + ' — บันทึกข้อมูลสำรองชั่วคราวในเครื่องสำเร็จ';
+    sEl.textContent = '⚠ ' + err.message + ' ! ';
     
     rec.id = Date.now().toString();
     records.unshift(rec);
     saveData();
     clearForm();
-    showSuccessModal('บันทึกข้อมูลแบบออฟไลน์สำเร็จแล้ว! 💾<br><span style="font-size:11.5px; color:var(--gray-500);">(เนื่องจากระบบติดต่อระบบคลาวด์ไม่ได้ ข้อมูลจึงสำรองไว้ที่เครื่องนี้ชั่วคราว)</span>');
+    showSuccessModal('<br><span style="font-size:11.5px; color:var(--gray-500);"</span>');
   }
   
   btnSave.disabled = false;
 }
 
 function clearForm() {
-  ['f-note', 'f-cond-count', 'f-cond-detail', 'f-ready-count'].forEach(id => document.getElementById(id).value = '');
+  ['f-ready-count','f-note', 'f-cond-count', 'f-cond-detail'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-car-select').value = '';
   document.getElementById('f-car-other').value = '';
   document.getElementById('f-car-other').style.display = 'none';
@@ -643,12 +661,14 @@ function clearForm() {
   document.getElementById('f-receiver-other').value = '';
   document.getElementById('f-receiver-other').style.display = 'none';
   
-  document.querySelectorAll('input[name="qty"]').forEach(r => r.checked = false);
   document.getElementById('cond-ok').checked = false;
+  document.getElementById('ready-detail-wrap').style.display = 'none';
+
+  document.querySelectorAll('input[name="qty"]').forEach(r => r.checked = false);
+
   document.getElementById('cond-broken').checked = false;
   
   document.getElementById('cond-detail-wrap').style.display = 'none';
-  document.getElementById('ready-detail-wrap').style.display = 'none';
   document.getElementById('form-error').style.display = 'none';
   
   clearSig('sig-sender');
@@ -707,14 +727,14 @@ async function confirmDelete() {
 }
 
 function buildPrintRow(r) {
-  const condInfo = r.cond.includes('ชำรุด') ? (r.condCount ? ` (${r.condCount} ชิ้น)` : '') + (r.condDetail ? '<br><small>' + r.condDetail + '</small>' : '') : '';
   const readyInfo = r.cond.includes('พร้อมใช้งาน') && r.readyCount ? ` (${r.readyCount} ชิ้น)` : '';
+  const condInfo = r.cond.includes('ชำรุด') ? (r.condCount ? ` (${r.condCount} ชิ้น)` : '') + (r.condDetail ? '<br><small>' + r.condDetail + '</small>' : '') : '';
   
   const sigSenderTag = r.sigSender ? `<img src="${r.sigSender}">` : '-';
   const sigReceiverTag = r.sigReceiver ? `<img src="${r.sigReceiver}">` : '-';
   
   return `<tr>
-    <td>${r.date}</td>
+    <td>${formatThaiDate(r.date)}</td>
     <td>${r.time}</td>
     <td>${r.car || '-'}</td>
     <td style="text-align:left">${r.sender || '-'}</td>
@@ -722,19 +742,58 @@ function buildPrintRow(r) {
     <td style="text-align:left">${r.receiver || '-'}</td>
     <td>${sigReceiverTag}</td>
     <td>${r.qty || '-'}</td>
-    <td>${r.cond || '-'}${condInfo}${readyInfo}</td>
+    <td>${r.cond || '-'}</td>
+    <td>${r.readyCount || '-'}</td>
     <td>${r.condCount || '-'}</td>
     <td style="text-align:left">${r.condDetail || '-'}</td>
-    <td>${r.readyCount || '-'}</td>
+
     <td style="text-align:left">${r.note || '-'}</td>
   </tr>`;
+}
+
+// ฟังก์ชันแปลงข้อมูลวันที่ (YYYY-MM-DD) เป็นเดือนภาษาไทย และปี พ.ศ. ของรายการที่ส่งมอบ เพื่อพิมพ์เป็นหัวรายงาน
+function getMonthYearString(recordsList) {
+  if (!recordsList || recordsList.length === 0) return "ประจำเดือน - ปี พ.ศ. -";
+  
+  const thaiMonths = [
+    'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+    'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+  ];
+  
+  // รวบรวมช่วงปี-เดือนที่ไม่ซ้ำกัน
+  const uniquePeriods = [];
+  recordsList.forEach(r => {
+    if (!r.date) return;
+    const parts = r.date.split('-');
+    if (parts.length >= 2) {
+      const yearBE = parseInt(parts[0]) + 543; // แปลง ค.ศ. เป็น พ.ศ.
+      const monthIdx = parseInt(parts[1]) - 1;
+      const key = `${parts[0]}-${parts[1]}`;
+      if (!uniquePeriods.some(p => p.key === key)) {
+        uniquePeriods.push({ key, year: yearBE, monthIndex: monthIdx, monthName: thaiMonths[monthIdx] });
+      }
+    }
+  });
+  
+  // เรียงลำดับตามไทม์ไลน์วันที่
+  uniquePeriods.sort((a, b) => a.key.localeCompare(b.key));
+  
+  if (uniquePeriods.length === 0) {
+    return "ประจำเดือน - ปี พ.ศ. -";
+  } else if (uniquePeriods.length === 1) {
+    return `ประจำเดือน ${uniquePeriods[0].monthName} ปี พ.ศ. ${uniquePeriods[0].year}`;
+  } else {
+    const first = uniquePeriods[0];
+    const last = uniquePeriods[uniquePeriods.length - 1];
+    return `ประจำเดือน ${first.monthName} พ.ศ. ${first.year}`;
+  }
 }
 
 function printRecord(id) {
   const r = records.find(x => x.id === id);
   if (!r) return;
-  document.getElementById('print-meta').textContent = 'พิมพ์: 1 รายการ';
-  document.getElementById('print-records').innerHTML = `<table class="ptable"><thead><tr><th>วันที่</th><th>เวลา</th><th>ทะเบียนรถ</th><th>ผู้ส่งมอบ</th><th>ลายเซ็น</th><th>ผู้รับมอบ</th><th>ลายเซ็น</th><th>จำนวน</th><th>สภาพ</th><th>ชำรุด</th><th>รายการชำรุด</th><th>พร้อมใช้</th><th>หมายเหตุ</th></tr></thead><tbody>${buildPrintRow(r)}</tbody></table>`;
+  document.getElementById('print-meta').textContent = getMonthYearString([r]);
+  document.getElementById('print-records').innerHTML = `<table class="ptable"><thead><tr><th>วันที่</th><th>เวลา</th><th>ทะเบียนรถ</th><th>ผู้ส่งมอบ</th><th>ลายเซ็น</th><th>ผู้รับมอบ</th><th>ลายเซ็น</th><th>จำนวน</th><th>สภาพ</th><th>ชำรุด</th><th>รายการชำรุด</th><th>พร้อมใช้งาน</th><th>หมายเหตุ</th></tr></thead><tbody>${buildPrintRow(r)}</tbody></table>`;
   window.print();
 }
 
@@ -742,8 +801,24 @@ function printAll() {
   const f = getFiltered();
   if (!f.length) { showToast('ไม่มีรายการที่สามารถพิมพ์ได้'); return; }
   const q = (document.getElementById('search-box').value || '').trim();
-  document.getElementById('print-meta').textContent = q ? `ผลการค้นหา: "${q}" — พบทั้งหมด ${f.length} รายการ` : `รายงานทั้งหมดในระบบ ${f.length} รายการ`;
-  document.getElementById('print-records').innerHTML = `<table class="ptable"><thead><tr><th>วันที่</th><th>เวลา</th><th>ทะเบียนรถ</th><th>ผู้ส่งมอบ</th><th>ลายเซ็น</th><th>ผู้รับมอบ</th><th>ลายเซ็น</th><th>จำนวน</th><th>สภาพ</th><th>ชำรุด</th><th>รายการชำรุด</th><th>พร้อมใช้</th><th>หมายเหตุ</th></tr></thead><tbody>${f.map(buildPrintRow).join('')}</tbody></table>`;
+  
+  // เรียงลำดับข้อมูลจากวันที่น้อยไปหาวันที่มาก (เก่าสุดไปใหม่สุด) อัตโนมัติก่อนพิมพ์รายงาน
+  const sortedPrintData = [...f].sort((a, b) => {
+    // แปลงสตริงวันที่เป็นออบเจกต์ Date เพื่อเทียบหาความเก่า-ใหม่
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    
+    if (dateA < dateB) return -1;
+    if (dateA > dateB) return 1;
+    
+    // หากวันที่ตรงกัน ให้ตรวจสอบเวลา
+    return (a.time || '').localeCompare(b.time || '');
+  });
+  
+  // แสดงผลลัพธ์ประจำเดือน และปี พ.ศ. ที่ได้มาจากข้อมูลวันที่จริงของรายการนั้นๆ
+  document.getElementById('print-meta').textContent = getMonthYearString(sortedPrintData);
+  
+  document.getElementById('print-records').innerHTML = `<table class="ptable"><thead><tr><th>วันที่</th><th>เวลา</th><th>ทะเบียนรถ</th><th>ผู้ส่งมอบ</th><th>ลายเซ็น</th><th>ผู้รับมอบ</th><th>ลายเซ็น</th><th>จำนวนเครื่องมือ</th><th>สภาพ</th><th>พร้อมใช้งาน</th><th>ชำรุด</th><th>รายการชำรุด</th><th>หมายเหตุ</th></tr></thead><tbody>${sortedPrintData.map(buildPrintRow).join('')}</tbody></table>`;
   window.print();
 }
 
@@ -763,16 +838,18 @@ function renderHistory() {
     const isWarn = r.qty === 'ไม่ครบ' || r.cond.includes('ชำรุด');
     const sc = isWarn ? 'var(--orange)' : 'var(--green)';
     const sb = isWarn ? 'var(--orange-light)' : 'var(--green-light)';
-    
+
+    const readyInfo = r.cond.includes('พร้อมใช้งาน') && r.readyCount ? ` (${r.readyCount})` : '';  
     const condInfo = r.cond.includes('ชำรุด') ? (r.condCount ? ` (${r.condCount})` : '') + (r.condDetail ? ': ' + r.condDetail : '') : '';
-    const readyInfo = r.cond.includes('พร้อมใช้งาน') && r.readyCount ? ` (${r.readyCount})` : '';
+
     
     let condDisplayHTML = `<span style="background:${sb};color:${sc};padding:2px 7px;border-radius:4px;font-weight:500;font-size:11px">${r.cond || '-'}</span>`;
-    if (condInfo) condDisplayHTML += `<br><span style="font-size:11px;color:var(--orange)">ชำรุด ${condInfo}</span>`;
     if (readyInfo) condDisplayHTML += `<br><span style="font-size:11px;color:var(--green)">พร้อมใช้ ${readyInfo}</span>`;
+    if (condInfo) condDisplayHTML += `<br><span style="font-size:11px;color:var(--orange)">ชำรุด ${condInfo}</span>`;
+
     
     return `<tr>
-      <td>${r.date}</td>
+      <td>${formatThaiDate(r.date)}</td>
       <td>${r.time}</td>
       <td>${r.car || '-'}</td>
       <td>
@@ -801,13 +878,13 @@ function renderHistory() {
     </tr>`;
   }).join('');
   
-  el.innerHTML = `<div style="overflow-x:auto"><table class="htable"><thead><tr><th>วันที่</th><th>เวลา</th><th>ทะเบียน</th><th>ผู้ส่งมอบ</th><th>ผู้รับมอบ</th><th>จำนวน</th><th>สภาพ</th><th>หมายเหตุ</th><th>การจัดการ</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  el.innerHTML = `<div style="overflow-x:auto"><table class="htable"><thead><tr><th>วันที่</th><th>เวลา</th><th>ทะเบียน</th><th>ผู้ส่งมอบ</th><th>ผู้รับมอบ</th><th>จำนวนเครื่องมือ</th><th>สภาพ</th><th>หมายเหตุ</th><th>การจัดการ</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
 function exportCSV() {
   if (!records.length) { showToast('ไม่พบข้อมูลสำหรับส่งออก'); return; }
-  const h = ['วันที่', 'เวลา', 'ทะเบียนรถ', 'ผู้ส่งมอบ', 'ผู้รับมอบ', 'จำนวน', 'สภาพ', 'ชำรุดจำนวน', 'รายการชำรุด', 'พร้อมใช้จำนวน', 'หมายเหตุ'];
-  const rows = records.map(r => [r.date, r.time, r.car, r.sender, r.receiver, r.qty, r.cond, r.condCount || '', r.condDetail || '', r.readyCount || '', r.note].map(v => `"${(v || '').replace(/"/g, '""')}"`).join(','));
+  const h = ['วันที่', 'เวลา', 'ทะเบียนรถ', 'ผู้ส่งมอบ', 'ผู้รับมอบ', 'จำนวนเครื่องมือ', 'สภาพ', 'พร้อมใช้จำนวน', 'ชำรุดจำนวน', 'รายการชำรุด', 'หมายเหตุ'];
+  const rows = records.map(r => [formatThaiDate(r.date), r.time, r.car, r.sender, r.receiver, r.qty, r.cond, r.readyCount || '', r.condCount || '', r.condDetail || '', r.note].map(v => `"${(v || '').replace(/"/g, '""')}"`).join(','));
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob(['\uFEFF' + h.join(',') + '\n' + rows.join('\n')], {type: 'text/csv;charset=utf-8;'}));
   a.download = 'รับ-ส่งมอบแก้ไฟ.csv';
@@ -823,6 +900,7 @@ function showToast(msg) {
   t.style.display = 'block';
   setTimeout(() => t.style.display = 'none', 2500);
 }
+
 
 window.addEventListener('load', async () => {
   loadData();
