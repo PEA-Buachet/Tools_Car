@@ -198,10 +198,11 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);widt
 
 <div class="card" id="view-history" style="display:none">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
-    <div style="font-size:15px;font-weight:600">📋 ประวัติการรับ-ส่งมอบ</div>
+    <div style="font-size:15px;font-weight:600">📋 ประวัติการรับ-ส่งมอบ (จากระบบส่วนกลาง)</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <input type="text" id="search-box" oninput="renderHistory()" placeholder="🔍 ค้นหา..." style="padding:6px 10px;border:0.5px solid var(--gray-300);border-radius:var(--radius);font-size:13px;width:160px">
-      <button class="btn btn-blue" onclick="printAll()" style="padding:6px 12px;font-size:13px">🖨️ พิมพ์</button>
+      <button class="btn btn-blue" onclick="syncDataFromServer()" style="padding:6px 12px;font-size:13px;background:var(--blue)">🔄 ดึงข้อมูลใหม่</button>
+      <button class="btn btn-blue" onclick="printAll()" style="padding:6px 12px;font-size:13px;background:var(--gray-700)">🖨️ พิมพ์</button>
       <button class="btn btn-secondary" onclick="exportCSV()" style="padding:6px 12px;font-size:13px">⬇️ CSV</button>
     </div>
   </div>
@@ -216,7 +217,7 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);widt
   <div class="modal-card">
     <div style="font-size: 2.2rem; margin-bottom: 8px;">⚠️</div>
     <div class="modal-title">ยืนยันการลบข้อมูลประวัติ</div>
-    <div class="modal-body">เพื่อความปลอดภัยในการลบข้อมูล กรุณาป้อนรหัสผ่านก่อนลบรายการนี้</div>
+    <div class="modal-body">เพื่อความปลอดภัยในการลบข้อมูล กรุณาป้อนรหัสผ่านเพื่อลบรายการนี้ออกจากระบบส่วนกลาง</div>
     
     <input type="password" id="delete-pwd-input" placeholder="ป้อนรหัสผ่านเพื่อยืนยัน" 
            onkeypress="if(event.key === 'Enter') confirmDelete()"
@@ -240,11 +241,52 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);widt
 <script>
 const STORAGE_KEY = 'fire_tool_records_v3';
 
-// ตรวจสอบค่า Apps Script Web App URL อัตโนมัติ (หากรันเป็น Web App)
-const SCRIPT_URL = window.location.href.indexOf('exec') !== -1 ? window.location.href : 'https://script.google.com/macros/s/AKfycbyOfjzfV-ytGOAbK4ft6fAZLdT2Zwuwf6zOYEgU7QWHJEbjRZ4qulgasYCpgxJ33_I/exec';
+// กำหนด URL ของ Google Apps Script สำหรับใช้เป็นช่องทางสำรองกรณีกดรันจากคอมพิวเตอร์ข้างนอกโดยตรง
+const SCRIPT_URL = window.location.href.indexOf('exec') !== -1 ? window.location.href : 'https://script.google.com/macros/s/AKfycbwJaSCCmWGedv7tFmB27mx5AiZJ2D54q4PafmuJbWT7a79wCeQCih41yTO2GftlSvk/exec';
 
 let records = [];
-let deleteTargetId = null; // เก็บ id ที่ต้องการลบชั่วคราว
+let deleteTargetId = null; 
+
+// ฟังก์ชันหลักสำหรับการสื่อสารกับระบบหลังบ้าน
+// หากเปิดใน Apps Script จะใช้ google.script.run แบบ Native ทันที ปราศจากปัญหา CORS บล็อก 100%
+function callBackend(payload) {
+  return new Promise((resolve, reject) => {
+    const isAppsScriptEnv = (typeof google !== 'undefined' && google.script && google.script.run);
+    
+    if (isAppsScriptEnv) {
+      google.script.run
+        .withSuccessHandler((responseString) => {
+          try {
+            const resData = JSON.parse(responseString);
+            resolve(resData);
+          } catch (e) {
+            reject(new Error('การแปลงข้อมูลเซิร์ฟเวอร์ผิดพลาด: ' + e.toString()));
+          }
+        })
+        .withFailureHandler((err) => {
+          reject(new Error('เซิร์ฟเวอร์หลังบ้านประมวลผลขัดข้อง: ' + err.toString()));
+        })
+        .executeAction(JSON.stringify(payload));
+    } else {
+      // ทำงานแบบดั้งเดิม (สำหรับเปิดไฟล์ทดสอบจากคอมพิวเตอร์ภายนอกโดยตรง)
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+      })
+      .then(resp => {
+        if (resp.ok) return resp.json();
+        throw new Error('การเชื่อมต่อฝั่งเซิร์ลเวอร์ขัดข้อง สถานะ: ' + resp.status);
+      })
+      .then(resData => {
+        resolve(resData);
+      })
+      .catch(err => {
+        reject(new Error(err.message || 'ไม่สามารถติดต่อ Google Sheets ได้ (CORS หรือ URL ขัดข้อง)'));
+      });
+    }
+  });
+}
 
 function loadData() {
   try { records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch(e) { records = []; }
@@ -254,6 +296,28 @@ function loadData() {
 function saveData() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(records)); } catch(e) {}
   updateStats();
+}
+
+async function syncDataFromServer() {
+  const el = document.getElementById('history-list');
+  const originalHtml = el.innerHTML;
+  el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--blue);font-weight:500;">🔄 กำลังดึงข้อมูลล่าสุดจาก Google Sheets ของส่วนกลาง...</div>';
+  
+  try {
+    const resData = await callBackend({ action: 'read' });
+    if (resData.status === 'success' && resData.records) {
+      records = resData.records;
+      saveData(); 
+      renderHistory();
+      showToast('✓ ดึงประวัติส่วนกลางสำเร็จ');
+    } else {
+      throw new Error(resData.message || 'โครงสร้างข้อมูลไม่สมบูรณ์');
+    }
+  } catch (e) {
+    el.innerHTML = originalHtml;
+    showToast('⚠ ไม่สามารถซิงค์ประวัติส่วนกลางได้ แสดงข้อมูลแคชในเครื่องชั่วคราว');
+    renderHistory(); 
+  }
 }
 
 function updateStats() {
@@ -280,7 +344,6 @@ function getCarValue() {
 function toggleSenderOther() {
   const sel = document.getElementById('f-sender-select').value;
   const oth = document.getElementById('f-sender-other');
-  oth.style.display = sel === 'other' ? 'block' : 'none';
   if (sel === 'other') {
     oth.style.display = 'block';
     oth.focus();
@@ -298,7 +361,6 @@ function getSenderValue() {
 function toggleReceiverOther() {
   const sel = document.getElementById('f-receiver-select').value;
   const oth = document.getElementById('f-receiver-other');
-  oth.style.display = sel === 'other' ? 'block' : 'none';
   if (sel === 'other') {
     oth.style.display = 'block';
     oth.focus();
@@ -323,14 +385,15 @@ function toggleCondDetail() {
 function showView(v) {
   document.getElementById('view-form').style.display = v === 'form' ? 'block' : 'none';
   document.getElementById('view-history').style.display = v === 'history' ? 'block' : 'none';
-  if (v === 'history') renderHistory();
+  if (v === 'history') {
+    syncDataFromServer(); 
+  }
   const bf = document.getElementById('btn-form');
   const bh = document.getElementById('btn-history');
   bf.className = 'btn-tab ' + (v === 'form' ? 'active' : 'inactive');
   bh.className = 'btn-tab ' + (v === 'history' ? 'active' : 'inactive');
 }
 
-// ระบบจัดการพิกัดของ Canvas ให้ลื่นไหลและตรงจุดสัมผัส
 function initSig(id) {
   const c = document.getElementById(id);
   
@@ -442,35 +505,6 @@ function getSigData(id) {
   return isSigEmpty(id) ? '' : document.getElementById(id).toDataURL('image/png');
 }
 
-async function sendToSheet(rec) {
-  try {
-    const resp = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({
-        date: rec.date, time: rec.time, car: rec.car,
-        sender: rec.sender, receiver: rec.receiver,
-        qty: rec.qty, cond: rec.cond,
-        condCount: rec.condCount || '', condDetail: rec.condDetail || '',
-        readyCount: rec.readyCount || '', note: rec.note,
-        sigSender: rec.sigSender || '', sigReceiver: rec.sigReceiver || ''
-      })
-    });
-    
-    if (resp.ok) {
-      const resData = await resp.json();
-      if(resData.status === "success") {
-        return {ok: true};
-      } else {
-        return {ok: false, msg: 'ข้อผิดพลาด: ' + resData.message};
-      }
-    }
-    return {ok: false, msg: 'การเชื่อมต่อขัดข้อง สถานะ: ' + resp.status};
-  } catch(e) {
-    return {ok: false, msg: 'ไม่สามารถติดต่อ Google Sheets ได้ (อาจเกิดจาก CORS หรือ URL ไม่ถูกต้อง)'};
-  }
-}
-
 async function saveRecord() {
   const date = document.getElementById('f-date').value;
   const car = getCarValue();
@@ -517,7 +551,7 @@ async function saveRecord() {
   btnSave.disabled = true;
   
   const rec = {
-    id: Date.now(), date, time: document.getElementById('f-time').value,
+    date, time: document.getElementById('f-time').value,
     car, sender, receiver,
     qty: qty ? qty.value : '', cond: cond ? cond.value : '',
     condCount: document.getElementById('f-cond-count').value,
@@ -532,23 +566,26 @@ async function saveRecord() {
   sEl.className = 'alert';
   sEl.style.background = '#EAF4FB';
   sEl.style.color = '#1A5276';
-  sEl.textContent = 'กำลังบันทึกลง Google Sheets และประมวลผล...';
+  sEl.textContent = 'กำลังบันทึกลง Google Sheets และประมวลผลระบบส่วนกลาง...';
   
-  const result = await sendToSheet(rec);
-  
-  if (result.ok) {
-    sEl.className = 'alert success';
-    sEl.textContent = '✓ บันทึกลง Google Sheets สำเร็จเรียบร้อยแล้ว';
-    setTimeout(() => sEl.style.display = 'none', 4000);
-    
-    records.unshift(rec);
-    saveData();
-    clearForm();
-    showToast('✓ บันทึกข้อมูลเสร็จสิ้น');
-  } else {
+  try {
+    const resData = await callBackend(rec);
+    if (resData.status === "success") {
+      sEl.className = 'alert success';
+      sEl.textContent = '✓ บันทึกลง Google Sheets สำเร็จเรียบร้อยแล้ว';
+      setTimeout(() => sEl.style.display = 'none', 4000);
+      
+      clearForm();
+      showToast('✓ บันทึกข้อมูลเรียบร้อยแล้ว');
+      await syncDataFromServer(); 
+    } else {
+      throw new Error(resData.message || 'เซิร์ฟเวอร์หลังบ้านส่งค่าผิดพลาด');
+    }
+  } catch (err) {
     sEl.className = 'alert warn';
-    sEl.textContent = '⚠ ' + result.msg + ' — บันทึกข้อมูลลงฐานข้อมูลสำรองภายในเครื่องเรียบร้อย';
+    sEl.textContent = '⚠ ' + err.message + ' — บันทึกข้อมูลสำรองชั่วคราวในเครื่องสำเร็จ';
     
+    rec.id = Date.now().toString();
     records.unshift(rec);
     saveData();
     clearForm();
@@ -580,7 +617,6 @@ function clearForm() {
   document.getElementById('f-date').value = new Date().toISOString().slice(0, 10);
 }
 
-// เปิดโมดอลยืนยันรหัสผ่านก่อนลบข้อมูล
 function deleteRecord(id) {
   deleteTargetId = id;
   const pwdInput = document.getElementById('delete-pwd-input');
@@ -589,30 +625,39 @@ function deleteRecord(id) {
   pwdInput.value = '';
   errorText.style.display = 'none';
   
-  // แสดงผลกล่องโมดอลในรูปแบบ flexbox
   document.getElementById('delete-modal').style.display = 'flex';
-  
-  // โฟกัสไปที่ช่องรหัสผ่านทันทีหลังเปิดขึ้นมา
   setTimeout(() => pwdInput.focus(), 150);
 }
 
-// ปิดกล่องโมดอลยืนยัน
 function closeDeleteModal() {
   document.getElementById('delete-modal').style.display = 'none';
   deleteTargetId = null;
 }
 
-// ตรวจสอบรหัสผ่านที่กรอกเพื่อยืนยันการลบ
-function confirmDelete() {
+async function confirmDelete() {
   const password = document.getElementById('delete-pwd-input').value;
   const errorText = document.getElementById('modal-error-text');
   
   if (password === 'fbct') {
     if (deleteTargetId !== null) {
-      records = records.filter(r => r.id !== deleteTargetId);
-      saveData();
-      renderHistory();
-      showToast('ลบรายการสำเร็จแล้ว');
+      showToast('กำลังส่งคำสั่งลบข้อมูลออกจากระบบคลาวด์ส่วนกลาง...');
+      
+      try {
+        const resData = await callBackend({ action: 'delete', id: deleteTargetId.toString() });
+        if (resData.status === 'success') {
+          records = records.filter(r => r.id !== deleteTargetId);
+          saveData();
+          renderHistory();
+          showToast('✓ ลบข้อมูลและปรับปรุงประวัติสำเร็จ');
+        } else {
+          throw new Error(resData.message || 'ลบข้อมูลบนคลาวด์ขัดข้อง');
+        }
+      } catch (err) {
+        records = records.filter(r => r.id !== deleteTargetId);
+        saveData();
+        renderHistory();
+        showToast('ลบประวัติแบบออฟไลน์สำเร็จ (' + err.message + ')');
+      }
     }
     closeDeleteModal();
   } else {
@@ -672,7 +717,7 @@ function renderHistory() {
   const filtered = getFiltered();
   const el = document.getElementById('history-list');
   if (!filtered.length) {
-    el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--gray-500)">ไม่พบข้อมูลการบันทึกประวัติ</div>';
+    el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--gray-500)">ไม่พบข้อมูลการบันทึกประวัติ หรือข้อมูลว่างเปล่า</div>';
     return;
   }
   const rows = filtered.map(r => {
@@ -707,8 +752,8 @@ function renderHistory() {
       <td>${r.note || ''}</td>
       <td>
         <div style="display:flex;gap:4px">
-          <button style="background:var(--blue);color:white;border:none;border-radius:4px;padding:3px 8px;font-size:11px;cursor:pointer" onclick="printRecord(${r.id})">🖨️</button>
-          <button style="background:var(--red-light);color:var(--red-dark);border:none;border-radius:4px;padding:3px 8px;font-size:11px;cursor:pointer" onclick="deleteRecord(${r.id})">🗑</button>
+          <button style="background:var(--blue);color:white;border:none;border-radius:4px;padding:3px 8px;font-size:11px;cursor:pointer" onclick="printRecord('${r.id}')">🖨️</button>
+          <button style="background:var(--red-light);color:var(--red-dark);border:none;border-radius:4px;padding:3px 8px;font-size:11px;cursor:pointer" onclick="deleteRecord('${r.id}')">🗑</button>
         </div>
       </td>
     </tr>`;
@@ -737,7 +782,7 @@ function showToast(msg) {
   setTimeout(() => t.style.display = 'none', 2500);
 }
 
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
   loadData();
   document.getElementById('f-date').value = new Date().toISOString().slice(0, 10);
   
@@ -745,6 +790,9 @@ window.addEventListener('load', () => {
     initSig('sig-sender');
     initSig('sig-receiver');
   }, 250);
+
+  // โหลดประวัติส่วนกลางจากชีตครั้งแรกที่หน้าจอเปิดทำงาน
+  await syncDataFromServer();
 });
 </script>
 </body>
