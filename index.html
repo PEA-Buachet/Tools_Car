@@ -255,7 +255,7 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);widt
 <script>
 const STORAGE_KEY = 'fire_tool_records_v4';
 
-const SCRIPT_URL = window.location.href.indexOf('exec') !== -1 ? window.location.href : 'https://script.google.com/macros/s/AKfycbzZL0u82CbquJo45U107AIUhHW1z6Mo0GqJ-VwB7caryofwDNGrhDVuIkmMWxu2oVw/exec';
+const SCRIPT_URL = window.location.href.indexOf('exec') !== -1 ? window.location.href : 'https://script.google.com/macros/s/AKfycbwBXaxbXnINf7fDo8V4XJAX9tYcT8pKhs5j4BM0VPUetuo5MAF5x-DOMKSkY7Wl0Uw/exec';
 
 let records = [];
 let deleteTargetId = null; 
@@ -329,8 +329,7 @@ async function syncDataFromServer() {
   try {
     const resData = await callBackend({ action: 'read' });
     if (resData.status === 'success' && resData.records) {
-      // เพิ่มการคัดกรองข้อมูล (Filter): ถ้ารายการใดไม่มีข้อมูลวันที่ หรือทะเบียนรถ (บ่งบอกว่าเป็นแถวว่าง) จะไม่ถูกบันทึกในประวัติ
-      records = resData.records.filter(r => r.date && r.date.trim() !== '' && r.car && r.car.trim() !== '');
+      records = resData.records;
       saveData(); 
       renderHistory();
       showToast('✓ ดึงประวัติส่วนกลางสำเร็จ');
@@ -507,6 +506,7 @@ async function saveRecord() {
   if (condOk) selectedConds.push('พร้อมใช้งาน');
   if (condBroken) selectedConds.push('ชำรุด');
   
+  // เพิ่มตัวแปร action: 'create' ลงไป เพื่อให้ Backend รู้ว่าเป็นการบันทึกข้อมูล
   const rec = {
     action: 'create',
     date, 
@@ -543,6 +543,7 @@ async function saveRecord() {
       throw new Error(resData.message || 'เซิร์ฟเวอร์หลังบ้านส่งค่าผิดพลาด');
     }
   } catch (err) {
+    // แก้ไข: แสดง Error ชัดเจน ไม่แอบบันทึกเข้าเครื่อง
     sEl.className = 'alert error';
     sEl.textContent = '❌ ขัดข้อง: ' + err.message;
     sEl.style.background = 'var(--red-light)';
@@ -600,6 +601,7 @@ async function confirmDelete() {
   }
 }
 
+// โครงสร้างตารางพิมพ์ให้ตรงตามที่ขอ 100%
 function buildPrintRow(r) {
   const sigSenderTag = r.sigSender ? `<img src="${r.sigSender}">` : '-';
   const sigReceiverTag = r.sigReceiver ? `<img src="${r.sigReceiver}">` : '-';
@@ -670,6 +672,7 @@ function getFiltered() {
   return records.filter(r => (r.date + r.time + r.car + r.sender + r.receiver + r.note).toLowerCase().includes(q));
 }
 
+// โครงสร้างตารางหน้าเว็บให้ตรงตามที่ขอ 100%
 function renderHistory() {
   const filtered = getFiltered();
   const el = document.getElementById('history-list');
@@ -712,6 +715,7 @@ function renderHistory() {
   </tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
+// โครงสร้าง CSV ออกไฟล์ Excel ให้ตรงตามที่ขอ 100%
 function exportCSV() {
   if (!records.length) { showToast('ไม่พบข้อมูลสำหรับส่งออก'); return; }
   const h = ['วันที่', 'เวลา', 'ทะเบียนรถ', 'ชื่อผู้ส่งมอบ', 'ลายเซ็นผู้ส่งมอบ', 'ชื่อผู้รับมอบ', 'ลายเซ็นผู้รับมอบ', 'จำนวนเครื่องมือ', 'สภาพเครื่องมือ', 'พร้อมใช้งาน', 'ชำรุด', 'รายการที่ชำรุด', 'หมายเหตุ'];
