@@ -259,7 +259,8 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);widt
 const STORAGE_KEY = 'fire_tool_records_v3';
 
 // กำหนด URL ของ Google Apps Script สำหรับใช้เป็นช่องทางสำรองกรณีกดรันจากคอมพิวเตอร์ข้างนอกโดยตรง
-const SCRIPT_URL = window.location.href.indexOf('exec') !== -1 ? window.location.href : 'https://script.google.com/macros/s/AKfycbx24T0Tk8bmCpBexVc5e3pR3h4-YQW06T0Fq2lZhXonSBG1fLLtev4IDYr23zfGVQ/exec';
+// หมายเหตุ: เมื่อคุณ Deploy เว็บแอปเรียบร้อยแล้ว ให้นำ URL ที่ได้มาใส่แทนค่าตัวแปรนี้
+const SCRIPT_URL = window.location.href.indexOf('exec') !== -1 ? window.location.href : 'https://script.google.com/macros/s/AKfycbwBXaxbXnINf7fDo8V4XJAX9tYcT8pKhs5j4BM0VPUetuo5MAF5x-DOMKSkY7Wl0Uw/exec';
 
 let records = [];
 let deleteTargetId = null; 
@@ -308,7 +309,12 @@ function callBackend(payload) {
 // ฟังก์ชันแปลงรูปแบบวันที่จากปี ค.ศ. (YYYY-MM-DD) เป็นปี พ.ศ. (DD-MM-YYYY)
 function formatThaiDate(dateStr) {
   if (!dateStr) return '-';
-  const parts = dateStr.split('-');
+  let str = String(dateStr);
+  // กรณีได้รับสตริงรูปแบบ ISO จาก JSON.stringify ฝั่ง Apps Script เช่น "2026-06-15T00:00:00.000Z"
+  if (str.includes('T')) {
+    str = str.split('T')[0];
+  }
+  const parts = str.split('-');
   if (parts.length === 3) {
     const year = parseInt(parts[0]);
     // ถ้าปีที่ส่งมาน้อยกว่า 2500 ให้บวกเพิ่ม 543 เพื่อทำเป็น ปี พ.ศ.
@@ -531,6 +537,16 @@ function clearSig(id) {
   ctx.clearRect(0, 0, c.width, c.height);
 }
 
+// ฟังก์ชันควบคุมโมดอลบันทึกสำเร็จ
+function showSuccessModal(msg) {
+  document.getElementById('success-modal-text').innerHTML = msg;
+  document.getElementById('success-modal').style.display = 'flex';
+}
+
+function closeSuccessModal() {
+  document.getElementById('success-modal').style.display = 'none';
+}
+
 function isSigEmpty(id) {
   const c = document.getElementById(id);
   const context = c.getContext('2d');
@@ -540,16 +556,6 @@ function isSigEmpty(id) {
 
 function getSigData(id) {
   return isSigEmpty(id) ? '' : document.getElementById(id).toDataURL('image/png');
-}
-
-// ฟังก์ชันควบคุมโมดอลบันทึกสำเร็จ
-function showSuccessModal(msg) {
-  document.getElementById('success-modal-text').innerHTML = msg;
-  document.getElementById('success-modal').style.display = 'flex';
-}
-
-function closeSuccessModal() {
-  document.getElementById('success-modal').style.display = 'none';
 }
 
 async function saveRecord() {
@@ -726,10 +732,8 @@ async function confirmDelete() {
   }
 }
 
+// ฟังก์ชันสร้างแถวข้อมูลสำหรับการพิมพ์ - จัดเรียงลำดับคอลัมน์ให้อยู่ในลำดับเดียวกับหัวตารางอย่างชัดเจน
 function buildPrintRow(r) {
-  const readyInfo = r.cond.includes('พร้อมใช้งาน') && r.readyCount ? ` (${r.readyCount} ชิ้น)` : '';
-  const condInfo = r.cond.includes('ชำรุด') ? (r.condCount ? ` (${r.condCount} ชิ้น)` : '') + (r.condDetail ? '<br><small>' + r.condDetail + '</small>' : '') : '';
-  
   const sigSenderTag = r.sigSender ? `<img src="${r.sigSender}">` : '-';
   const sigReceiverTag = r.sigReceiver ? `<img src="${r.sigReceiver}">` : '-';
   
@@ -746,7 +750,6 @@ function buildPrintRow(r) {
     <td>${r.readyCount || '-'}</td>
     <td>${r.condCount || '-'}</td>
     <td style="text-align:left">${r.condDetail || '-'}</td>
-
     <td style="text-align:left">${r.note || '-'}</td>
   </tr>`;
 }
@@ -764,7 +767,11 @@ function getMonthYearString(recordsList) {
   const uniquePeriods = [];
   recordsList.forEach(r => {
     if (!r.date) return;
-    const parts = r.date.split('-');
+    let str = String(r.date);
+    if (str.includes('T')) {
+      str = str.split('T')[0];
+    }
+    const parts = str.split('-');
     if (parts.length >= 2) {
       const yearBE = parseInt(parts[0]) + 543; // แปลง ค.ศ. เป็น พ.ศ.
       const monthIdx = parseInt(parts[1]) - 1;
@@ -793,7 +800,7 @@ function printRecord(id) {
   const r = records.find(x => x.id === id);
   if (!r) return;
   document.getElementById('print-meta').textContent = getMonthYearString([r]);
-  document.getElementById('print-records').innerHTML = `<table class="ptable"><thead><tr><th>วันที่</th><th>เวลา</th><th>ทะเบียนรถ</th><th>ผู้ส่งมอบ</th><th>ลายเซ็น</th><th>ผู้รับมอบ</th><th>ลายเซ็น</th><th>จำนวน</th><th>สภาพ</th><th>ชำรุด</th><th>รายการชำรุด</th><th>พร้อมใช้งาน</th><th>หมายเหตุ</th></tr></thead><tbody>${buildPrintRow(r)}</tbody></table>`;
+  document.getElementById('print-records').innerHTML = `<table class="ptable"><thead><tr><th>วันที่</th><th>เวลา</th><th>ทะเบียนรถ</th><th>ผู้ส่งมอบ</th><th>ลายเซ็น</th><th>ผู้รับมอบ</th><th>ลายเซ็น</th><th>จำนวนเครื่องมือ</th><th>สภาพ</th><th>พร้อมใช้งาน</th><th>ชำรุด</th><th>รายการชำรุด</th><th>หมายเหตุ</th></tr></thead><tbody>${buildPrintRow(r)}</tbody></table>`;
   window.print();
 }
 
