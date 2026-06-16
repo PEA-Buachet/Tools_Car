@@ -50,7 +50,18 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);widt
 .htable img{height:30px;max-width:70px;border:0.5px solid var(--gray-300);border-radius:3px;background:white}
 .rainbow-text{background:linear-gradient(90deg,#ff0000 0%,#ff7f00 16.66%,#ffff00 33.33%,#00ff00 50%,#0000ff 66.66%,#4b0082 83.33%,#9400d3 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:rainbow-flow 3s linear infinite}
 @keyframes rainbow-flow{0%{background-position:0% center}100%{background-position:200% center}}
-@media print{body{background:white}#no-print{display:none!important}#print-area{display:block!important}}
+
+@media print{
+  body{background:white}
+  #no-print{display:none!important}
+  #print-area{display:block!important}
+  /* ตั้งค่าให้หัวตารางแสดงซ้ำในทุกหน้าที่มีการขึ้นหน้าใหม่ */
+  thead{display:table-header-group!important}
+  tbody{display:table-row-group}
+  /* ป้องกันไม่ให้แถวข้อมูลในตารางถูกตัดแยกคนละหน้า */
+  tr{page-break-inside:avoid!important}
+}
+
 #print-area{display:none;font-family:'Sarabun',sans-serif;padding:12px}
 .ptable{width:100%;border-collapse:collapse;font-size:10px}
 .ptable th{background:#1a2332;color:white;padding:5px 5px;text-align:center;font-weight:600;border:1px solid #555}
