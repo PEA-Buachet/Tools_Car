@@ -245,7 +245,7 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);widt
   <div class="modal-card">
     <div style="font-size: 3rem; margin-bottom: 8px;">✅</div>
     <div class="modal-title" style="color:var(--green); font-size:18px;">บันทึกข้อมูลสำเร็จ!</div>
-    <div class="modal-body" id="success-modal-text" style="font-size:13.5px; margin-bottom:16px; line-height:1.5; color:var(--gray-700)">ระบบได้รับการบันทึกข้อมูลส่งมอบเรียบร้อยแล้ว</div>
+    <div class="modal-body" id="success-modal-text" style="font-size:13.5px; margin-bottom:16px; line-height:1.5; color:var(--gray-700)">ระบบได้รับการบันทึกข้อมูลเรียบร้อยแล้ว</div>
     
     <div style="display:flex; justify-content:center;">
       <button class="btn btn-primary" onclick="closeSuccessModal()" style="padding:8px 24px; font-size:14px; background-color:var(--green); border-radius:var(--radius)">ตกลง</button>
@@ -345,7 +345,7 @@ async function syncDataFromServer() {
       records = resData.records;
       saveData(); 
       renderHistory();
-      showToast('✓ ดึงประวัติส่วนกลางสำเร็จ');
+      showToast('✓ ดึงประวัติสำเร็จ');
     } else {
       throw new Error(resData.message || 'โครงสร้างข้อมูลไม่สมบูรณ์');
     }
@@ -618,17 +618,17 @@ async function saveRecord() {
   sEl.className = 'alert';
   sEl.style.background = '#EAF4FB';
   sEl.style.color = '#1A5276';
-  sEl.textContent = 'กำลังบันทึกลง Google Sheets ...';
+  sEl.textContent = 'กำลังบันทึกลง Google Sheets...';
   
   try {
     const resData = await callBackend(rec);
     if (resData.status === "success") {
       sEl.className = 'alert success';
-      sEl.textContent = '✓ บันทึกลง Google Sheets และประมวลผลสำเร็จ';
+      sEl.textContent = '✓ กำลังบันทึกลง Google Sheets....';
       setTimeout(() => sEl.style.display = 'none', 4000);
       
       clearForm();
-      showSuccessModal('บันทึกข้อมูลและส่งมอบเครื่องมือเรียบร้อยแล้ว ลงในระบบ Google Sheets ฝั่งออนไลน์เรียบร้อยครับ 🎉');
+      showSuccessModal('บันทึกข้อมูลและส่งมอบเครื่องมือเรียบร้อยแล้ว');
       await syncDataFromServer(); 
     } else {
       throw new Error(resData.message || 'เซิร์ฟเวอร์หลังบ้านส่งค่าผิดพลาด');
@@ -689,7 +689,7 @@ async function confirmDelete() {
   
   if (password === 'fbct') {
     if (deleteTargetId !== null) {
-      showToast('กำลังลบข้อมูลในระบบออนไลน์คลาวด์...');
+      showToast('กำลังลบข้อมูลในระบบ...');
       
       try {
         const resData = await callBackend({ action: 'delete', id: deleteTargetId.toString() });
@@ -697,12 +697,12 @@ async function confirmDelete() {
           records = records.filter(r => r.id !== deleteTargetId);
           saveData();
           renderHistory();
-          showToast('✓ ลบข้อมูลบน Google Sheets สำเร็จ');
+          showToast('✓ ลบข้อมูลในระบบสำเร็จ');
         } else {
           throw new Error(resData.message || 'ลบข้อมูลขัดข้อง');
         }
       } catch (err) {
-        showToast('⚠ ไม่สามารถดำเนินการลบข้อมูลในระบบคลาวด์ได้: ' + err.message);
+        showToast('⚠ ไม่สามารถดำเนินการลบข้อมูลในระบบได้: ' + err.message);
       }
     }
     closeDeleteModal();
