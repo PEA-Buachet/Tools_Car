@@ -1,945 +1,227 @@
-<!DOCTYPE html>
-<html lang="th">
+<!doctype html>
+<html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ระบบรับ-ส่งมอบเครื่องมือประจำรถแก้ไฟ</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--red:#C0392B;--red-light:#FADBD8;--red-dark:#922B21;--orange:#E67E22;--orange-light:#FDEBD0;--green:#27AE60;--green-light:#EAFAF1;--blue:#1A5276;--gray-100:#F8F9FA;--gray-200:#ECEFF1;--gray-300:#CFD8DC;--gray-500:#78909C;--gray-700:#37474F;--gray-900:#1A2332;--white:#fff;--radius:8px;--radius-lg:12px;--shadow:0 2px 8px rgba(0,0,0,0.08)}
-body{font-family:'Sarabun',sans-serif;background:#F0F2F5;min-height:100vh;color:var(--gray-900)}
-.container{max-width:780px;margin:0 auto;padding:16px}
-.header{background:linear-gradient(135deg,var(--red-dark) 0%,var(--red) 100%);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1rem;box-shadow:0 4px 16px rgba(192,57,43,0.35);flex-wrap:wrap}
-.header-icon{background:rgba(255,255,255,0.15);border-radius:50%;width:50px;height:50px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px}
-.header h1{color:white;font-size:17px;font-weight:700}
-.header p{color:rgba(255,255,255,0.75);font-size:12px;margin-top:2px}
-.header-btns{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
-.btn-tab{border:none;border-radius:var(--radius);padding:8px 14px;font-size:13px;font-family:inherit;font-weight:600;cursor:pointer}
-.btn-tab.active{background:white;color:var(--red)}
-.btn-tab.inactive{background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3)}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.25rem}
-.stat-card{background:var(--white);border:0.5px solid var(--gray-300);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow)}
-.stat-card .label{font-size:11px;color:var(--gray-500);margin-bottom:3px}
-.stat-card .value{font-size:24px;font-weight:700}
-.card{background:var(--white);border:0.5px solid var(--gray-300);border-radius:var(--radius-lg);padding:1.25rem;box-shadow:var(--shadow);margin-bottom:1rem}
-.card-title{font-size:15px;font-weight:600;color:var(--gray-900);margin-bottom:1rem;padding-bottom:10px;border-bottom:0.5px solid var(--gray-200)}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-.form-grid.full{grid-template-columns:1fr}
-.field label{font-size:12px;color:var(--gray-500);display:block;margin-bottom:4px}
-.field label span{color:var(--red)}
-.field input,.field select,.field textarea{width:100%;padding:8px 10px;border:0.5px solid var(--gray-300);border-radius:var(--radius);font-size:14px;font-family:inherit;background:white}
-canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);width:100%;height:100px;display:block;background:#fff;touch-action:none}
-.sig-wrap{position:relative}
-.sig-clear{position:absolute;top:6px;right:6px;background:var(--red-light);color:var(--red-dark);border:none;border-radius:4px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:inherit;z-index:10}
-.btn{border:none;border-radius:var(--radius);padding:10px 18px;font-size:14px;font-family:inherit;font-weight:600;cursor:pointer}
-.btn-primary{background:var(--red);color:white}
-.btn-primary:disabled{background:var(--gray-500);cursor:not-allowed}
-.btn-secondary{background:var(--gray-100);color:var(--gray-700);border:0.5px solid var(--gray-300)}
-.btn-blue{background:var(--blue);color:white}
-.btn-row{display:flex;gap:8px;margin-top:4px}
-.alert{display:none;border-radius:var(--radius);padding:8px 12px;font-size:13px;margin-bottom:12px}
-.alert.error{background:var(--red-light);color:var(--red-dark)}
-.alert.success{background:var(--green-light);color:#1E8449}
-.alert.warn{background:var(--orange-light);color:#784212}
-.htable{width:100%;border-collapse:collapse;font-size:12px}
-.htable th{background:var(--red);color:white;padding:7px 8px;text-align:center;font-weight:600;border:1px solid #a93226}
-.htable td{padding:5px 8px;border:0.5px solid var(--gray-300);background:white;vertical-align:middle}
-.htable tr:nth-child(even) td{background:#FAFBFC}
-.htable tr:hover td{background:#EAF4FB}
-.htable img{height:30px;max-width:70px;border:0.5px solid var(--gray-300);border-radius:3px;background:white}
-.rainbow-text{background:linear-gradient(90deg,#ff0000 0%,#ff7f00 16.66%,#ffff00 33.33%,#00ff00 50%,#0000ff 66.66%,#4b0082 83.33%,#9400d3 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:rainbow-flow 3s linear infinite}
-@keyframes rainbow-flow{0%{background-position:0% center}100%{background-position:200% center}}
+  <!-- Required meta tags -->
+  <base target="_top">
+  <!--font awesome-->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sarabun">
+  <!-- Font Awesome CSS -->
+  <script src="https://kit.fontawesome.com/6a972cf3a7.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+    xintegrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+    xintegrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+    crossorigin="anonymous"></script>
+  <!-- CSS only -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
+    xintegrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+  <!-- JavaScript Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    xintegrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
+  </script>
+  <!--ชุดสี bootstrap5-->
+  <link href="https://ltschool.web.app/css/Bootstrapcolor.css" rel="stylesheet" type="text/css">
+  <style type='text/css'>
+    @font-face {
+      font-family: 'Sarabun';
+    }
 
-@media print{
-  body{background:white}
-  #no-print{display:none!important}
-  #print-area{display:block!important}
-  /* ตั้งค่าให้หัวตารางแสดงซ้ำในทุกหน้าที่มีการขึ้นหน้าใหม่ */
-  thead{display:table-header-group!important}
-  tbody{display:table-row-group}
-  /* ป้องกันไม่ให้แถวข้อมูลในตารางถูกตัดแยกคนละหน้า */
-  tr{page-break-inside:avoid!important}
-}
+    body {
+      font-family: 'Sarabun' !important;
+    }
 
-#print-area{display:none;font-family:'Sarabun',sans-serif;padding:12px}
-.ptable{width:100%;border-collapse:collapse;font-size:10px}
-.ptable th{background:#1a2332;color:white;padding:5px 5px;text-align:center;font-weight:600;border:1px solid #555}
-.ptable td{padding:4px 5px;border:1px solid #999;vertical-align:middle;text-align:center}
-.ptable img{height:30px;max-width:65px;background:white}
-@media(max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:1fr}}
+    ::placeholder {
+      color: peachpuff;
+      font-size: 16px;
+      text-align: center;
+    }
 
-/* สไตล์สำหรับกล่องโมดอล */
-.modal-overlay {display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:10000;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
-.modal-card {background:var(--white);border-radius:var(--radius-lg);padding:1.5rem;width:90%;max-width:400px;box-shadow:0 10px 25px rgba(0,0,0,0.2);animation:modal-anim 0.25s ease-out;text-align:center}
-@keyframes modal-anim {from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1}}
-.modal-title {font-size:16px;font-weight:700;color:var(--gray-900);margin-bottom:8px}
-.modal-body {font-size:13px;color:var(--gray-500);margin-bottom:16px}
-</style>
+      {}
+
+    #loader {
+      border: 6px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 6px solid #000000;
+      border-bottom: 6px solid #000000;
+      width: 40px;
+      height: 40px;
+      -webkit-animation: spin 0.5s linear infinite;
+      animation: spin 0.5s linear infinite;
+      visibility: hidden;
+    }
+
+    @-webkit-keyframes spin {
+      0% {
+        -webkit-transform: rotate(0deg);
+      }
+
+      100% {
+        -webkit-transform: rotate(360deg);
+      }
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+
 </head>
+
 <body>
-
-<div id="print-area">
-  <!-- ย้ายข้อมูลหัวข้อรายงานหลักไปฝังใน thead ของตารางแทนเพื่อรองรับหลายหน้าอย่างสมบูรณ์ -->
-  <div id="print-records"></div>
-</div>
-
-<div id="no-print">
-<div class="container">
-
-<div class="header">
-  <div class="header-icon">⚡</div>
-  <div><h1>ระบบรับ-ส่งมอบเครื่องมือประจำรถแก้ไฟ</h1><p>FM-ฉ.3-94 | การไฟฟ้าส่วนภูมิภาค สาขาบัวเชด</p></div>
-  <div class="header-btns">
-    <button class="btn-tab active" id="btn-form" onclick="showView('form')">+ บันทึกใหม่</button>
-    <button class="btn-tab inactive" id="btn-history" onclick="showView('history')">📋 ประวัติ</button>
   </div>
-</div>
-
-<div class="stats">
-  <div class="stat-card" style="border-left:3px solid var(--red)"><div class="label">ทั้งหมด</div><div class="value" id="stat-total">0</div></div>
-  <div class="stat-card" style="border-left:3px solid var(--green)"><div class="label">ครบ/พร้อม</div><div class="value" id="stat-ok" style="color:var(--green)">0</div></div>
-  <div class="stat-card" style="border-left:3px solid var(--orange)"><div class="label">ชำรุด</div><div class="value" id="stat-warn" style="color:var(--orange)">0</div></div>
-  <div class="stat-card" style="border-left:3px solid var(--gray-500)"><div class="label">วันนี้</div><div class="value" id="stat-today">0</div></div>
-</div>
-
-<div class="card" id="view-form">
-  <div class="card-title">📋 บันทึกการรับ-ส่งมอบ</div>
-
-  <div class="form-grid">
-    <div class="field"><label>วันที่ <span>*</span></label><input type="date" id="f-date"></div>
-    <div class="field"><label>เวลา <span>*</span></label><select id="f-time"><option value="08:30 น.">08:30 น.</option><option value="00:30 น.">00:30 น.</option><option value="16:30 น.">16:30 น.</option></select></div>
+<!---------------------เปิดส่วนหัวเว็บ--------------------------->
+  <br>
+  <div class="container mb-3">
+    <nav class="navbar navbar-expand-lg navbar-dark bd-blue-500 " style="border-radius: 25px; box-shadow: 0 10px 10px rgb(0 0 0 / 10%);background-image: linear-gradient(to right top, #74045f, #74045f, #74045f, #74045f, #74045f, #74045f, #74045f, #74045f, #74045f, #74045f, #74045f, #74045f);">
+        <a class="navbar-brand"></a>
+        <span class="navbar-brand flex-grow-1 text-center"><i class="fas fa-search"></i> ระบบค้นหาพิกัดมิเตอร์ภายใน กฟส.บัวเชด</span>
+    </nav>
   </div>
+<!---------------------ปิดส่วนหัวเว็บ--------------------------->
 
-  <div class="form-grid full">
-    <div class="field">
-      <label>ทะเบียนรถ <span>*</span></label>
-      <select id="f-car-select" onchange="toggleCarOther()">
-        <option value="">-- เลือกทะเบียนรถ --</option>
-        <option value="83-3537 สุรินทร์">83-3735 สุรินทร์</option>
-        <option value="บย 2665 สุรินทร์">บย 2665 สุรินทร์</option>
-        <option value="other">อื่นๆ (ระบุเอง)</option>
-      </select>
-      <input type="text" id="f-car-other" placeholder="ระบุทะเบียนรถ..." style="display:none;margin-top:8px;border:0.5px solid var(--orange)">
-    </div>
-  </div>
+<!---------------------เปิดส่วนของช่องค้นหา--------------------->
 
-  <div class="form-grid">
-    <div class="field">
-      <label>ผู้ส่งมอบ <span>*</span></label>
-      <select id="f-sender-select" onchange="toggleSenderOther()">
-        <option value="">-- เลือกชื่อ --</option>
-        <option value="นายปรีชา ผาผล">นายปรีชา ผาผล</option>
-        <option value="นายกฤษณะ หวังสุดดี">นายกฤษณะ หวังสุดดี</option>
-        <option value="นายหฤษฎ์ ปัญญาดี">นายหฤษฎ์ ปัญญาดี</option>
-        <option value="นายหรรษธร บุญเนือง">นายหรรษธร บุญเนือง</option>
-        <option value="other">อื่นๆ (พิมพ์เอง)</option>
-      </select>
-      <input type="text" id="f-sender-other" placeholder="ระบุชื่อ..." style="display:none;margin-top:8px;border:0.5px solid var(--orange)">
-    </div>
-    <div class="field">
-      <label>ผู้รับมอบ <span>*</span></label>
-      <select id="f-receiver-select" onchange="toggleReceiverOther()">
-        <option value="">-- เลือกชื่อ --</option>
-        <option value="นายปรีชา ผาผล">นายปรีชา ผาผล</option>
-        <option value="นายกฤษณะ หวังสุดดี">นายกฤษณะ หวังสุดดี</option>
-        <option value="นายหฤษฎ์ ปัญญาดี">นายหฤษฎ์ ปัญญาดี</option>
-        <option value="นายหรรษธร บุญเนือง">นายหรรษธร บุญเนือง</option>
-        <option value="other">อื่นๆ (พิมพ์เอง)</option>
-      </select>
-      <input type="text" id="f-receiver-other" placeholder="ระบุชื่อ..." style="display:none;margin-top:8px;border:0.5px solid var(--orange)">
-    </div>
-  </div>
-
-  <div class="form-grid">
-    <div class="field">
-      <label>จำนวนเครื่องมือ <span>*</span></label>
-      <div style="display:flex;gap:12px;margin-top:8px">
-        <label><input type="radio" name="qty" value="ครบ"> ครบ</label>
-        <label><input type="radio" name="qty" value="ไม่ครบ"> ไม่ครบ</label>
-      </div>
-    </div>
-    <div class="field">
-      <label>สภาพเครื่องมือ <span>*</span></label>
-      <div style="display:flex;gap:12px;margin-top:8px">
-        <label><input type="checkbox" name="cond" id="cond-ok" value="พร้อมใช้งาน" onchange="toggleCondDetail()"> พร้อมใช้งาน
-        <div id="ready-detail-wrap" style="display:none;margin-top:8px">
-        <input type="number" id="f-ready-count" placeholder="จำนวนชิ้นที่พร้อมใช้งาน *" min="0" style="border:0.5px solid var(--green)">
-      </div>
-        </label>
-        <label><input type="checkbox" name="cond" id="cond-broken" value="ชำรุด" onchange="toggleCondDetail()"> ชำรุด</label>
-      </div>
-      <div id="cond-detail-wrap" style="display:none;margin-top:8px">
-        <input type="number" id="f-cond-count" placeholder="จำนวนชิ้นที่ชำรุด *" min="0" style="margin-bottom:6px;border:0.5px solid var(--orange)">
-        <input type="text" id="f-cond-detail" placeholder="ระบุรายการที่ชำรุด *" style="border:0.5px solid var(--orange)">
-      </div>
-    </div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px">
-    <div>
-      <div style="font-size:12px;color:var(--gray-500);margin-bottom:6px">✍️ ลายเซ็นผู้ส่งมอบ</div>
-      <div class="sig-wrap">
-        <canvas id="sig-sender" class="sig-pad"></canvas>
-        <button class="sig-clear" onclick="clearSig('sig-sender')">ล้าง</button>
-      </div>
-    </div>
-    <div>
-      <div style="font-size:12px;color:var(--gray-500);margin-bottom:6px">✍️ ลายเซ็นผู้รับมอบ</div>
-      <div class="sig-wrap">
-        <canvas id="sig-receiver" class="sig-pad"></canvas>
-        <button class="sig-clear" onclick="clearSig('sig-receiver')">ล้าง</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="field" style="margin-bottom:14px"><label>หมายเหตุ</label><textarea id="f-note" rows="2" placeholder="ระบุรายละเอียดเพิ่มเติม (ถ้ามี)"></textarea></div>
-
-  <div class="alert error" id="form-error"></div>
-  <div class="alert" id="sheets-status"></div>
-
-  <div class="btn-row">
-    <button class="btn btn-primary" id="btn-save" onclick="saveRecord()">💾 บันทึกข้อมูล</button>
-    <button class="btn btn-secondary" onclick="clearForm()">ล้างข้อมูล</button>
-  </div>
-</div>
-
-<div class="card" id="view-history" style="display:none">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
-    <div style="font-size:15px;font-weight:600">📋 ประวัติการรับ-ส่งมอบ </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <input type="text" id="search-box" oninput="renderHistory()" placeholder="🔍 ค้นหา..." style="padding:6px 10px;border:0.5px solid var(--gray-300);border-radius:var(--radius);font-size:13px;width:160px">
-      <button class="btn btn-blue" onclick="syncDataFromServer()" style="padding:6px 12px;font-size:13px;background:var(--blue)">🔄 ดึงข้อมูลใหม่</button>
-      <button class="btn btn-blue" onclick="printAll()" style="padding:6px 12px;font-size:13px;background:var(--gray-700)">🖨️ พิมพ์</button>
-      <button class="btn btn-secondary" onclick="exportCSV()" style="padding:6px 12px;font-size:13px">⬇️ CSV</button>
-    </div>
-  </div>
-  <div id="history-list"></div>
-</div>
-
-</div>
-</div>
-
-<!-- โมดอลยืนยันการลบข้อมูล -->
-<div id="delete-modal" class="modal-overlay">
-  <div class="modal-card">
-    <div style="font-size: 2.2rem; margin-bottom: 8px;">⚠️</div>
-    <div class="modal-title">ยืนยันการลบข้อมูลประวัติ</div>
-    <div class="modal-body">เพื่อความปลอดภัยในการลบข้อมูล กรุณาป้อนรหัสผ่านเพื่อลบรายการนี้ออก</div>
-    
-    <input type="password" id="delete-pwd-input" placeholder="ป้อนรหัสผ่านเพื่อยืนยัน" 
-           onkeypress="if(event.key === 'Enter') confirmDelete()"
-           style="width:100%; padding:10px; text-align:center; border:1.5px solid var(--gray-300); border-radius:var(--radius); margin-bottom:12px; font-size:14px; outline:none;">
-    
-    <div id="modal-error-text" style="color:var(--red); font-size:12px; font-weight:600; margin-bottom:12px; display:none;">รหัสผ่านไม่ถูกต้อง! กรุณาลองใหม่อีกครั้ง</div>
-    
-    <div style="display:flex; gap:8px; justify-content:center;">
-      <button class="btn btn-secondary" onclick="closeDeleteModal()" style="padding:6px 14px; font-size:13px;">ยกเลิก</button>
-      <button class="btn btn-primary" onclick="confirmDelete()" style="padding:6px 14px; font-size:13px; background-color:var(--red)">ยืนยันลบข้อมูล</button>
-    </div>
-  </div>
-</div>
-
-<!-- โมดอลแจ้งเตือนบันทึกสำเร็จ -->
-<div id="success-modal" class="modal-overlay">
-  <div class="modal-card">
-    <div style="font-size: 3rem; margin-bottom: 8px;">✅</div>
-    <div class="modal-title" style="color:var(--green); font-size:18px;">บันทึกข้อมูลสำเร็จ!</div>
-    <div class="modal-body" id="success-modal-text" style="font-size:13.5px; margin-bottom:16px; line-height:1.5; color:var(--gray-700)">ระบบได้รับการบันทึกข้อมูลเรียบร้อยแล้ว</div>
-    
-    <div style="display:flex; justify-content:center;">
-      <button class="btn btn-primary" onclick="closeSuccessModal()" style="padding:8px 24px; font-size:14px; background-color:var(--green); border-radius:var(--radius)">ตกลง</button>
-    </div>
-  </div>
-</div>
-
-<div style="margin-top:2rem;padding:1.5rem 16px;text-align:center;background:linear-gradient(to bottom,transparent,rgba(0,0,0,0.02))">
-  <div class="rainbow-text" style="font-size:14px;font-weight:600;letter-spacing:1px">⚡️ Design & System by PEA Buachet เขตชายแดน ⚡️</div>
-</div>
-
-<div id="toast" style="display:none;position:fixed;bottom:20px;right:20px;background:#1A2332;color:white;padding:10px 16px;border-radius:8px;font-size:13px;z-index:9999"></div>
-
-<script>
-const STORAGE_KEY = 'fire_tool_records_v3';
-
-// เปลี่ยน URL ด้านล่างนี้เป็น URL ของ Web App หลังจากการ Deploy บน Google Sheets
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyZtuKyup3jjCg9PyWfWY9JCS8eXAlt-fzI9YtD8H7nQ-YoG8XFkE7HiiQFbVBNCJs/exec';
-
-let records = [];
-let deleteTargetId = null; 
-
-function callBackend(payload) {
-  return new Promise((resolve, reject) => {
-    const isAppsScriptEnv = (typeof google !== 'undefined' && google.script && google.script.run);
-    
-    if (isAppsScriptEnv) {
-      google.script.run
-        .withSuccessHandler((responseString) => {
-          try {
-            const resData = JSON.parse(responseString);
-            resolve(resData);
-          } catch (e) {
-            reject(new Error('การแปลงข้อมูลเซิร์ฟเวอร์ผิดพลาด: ' + e.toString()));
-          }
-        })
-        .withFailureHandler((err) => {
-          reject(new Error('เซิร์ฟเวอร์หลังบ้านประมวลผลขัดข้อง: ' + err.toString()));
-        })
-        .executeAction(JSON.stringify(payload));
-    } else {
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(payload)
-      })
-      .then(resp => {
-        if (resp.ok) return resp.json();
-        throw new Error('การเชื่อมต่อฝั่งเซิร์ลเวอร์ขัดข้อง สถานะ: ' + resp.status);
-      })
-      .then(resData => {
-        resolve(resData);
-      })
-      .catch(err => {
-        reject(new Error(err.message || 'ไม่สามารถติดต่อ Google Sheets ได้'));
-      });
-    }
-  });
-}
-
-function formatThaiDate(dateStr) {
-  if (!dateStr) return '-';
-  let str = String(dateStr);
-  if (str.includes('T')) {
-    str = str.split('T')[0];
-  }
-  const parts = str.split('-');
-  if (parts.length === 3) {
-    const year = parseInt(parts[0]);
-    const yearBE = year < 2500 ? year + 543 : year;
-    const month = parts[1];
-    const day = parts[2];
-    return `${day}-${month}-${yearBE}`;
-  }
-  return dateStr;
-}
-
-function loadData() {
-  try { records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch(e) { records = []; }
-  updateStats();
-}
-
-function saveData() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(records)); } catch(e) {}
-  updateStats();
-}
-
-async function syncDataFromServer() {
-  const el = document.getElementById('history-list');
-  const originalHtml = el.innerHTML;
-  
-  el.innerHTML = '<div style="text-align:center;padding:2rem;"></div>';
-  
-  try {
-    const resData = await callBackend({ action: 'read' });
-    if (resData.status === 'success' && resData.records) {
-      records = resData.records;
-      saveData(); 
-      renderHistory();
-      showToast('✓ ดึงประวัติสำเร็จ');
-    } else {
-      throw new Error(resData.message || 'โครงสร้างข้อมูลไม่สมบูรณ์');
-    }
-  } catch (e) {
-    el.innerHTML = originalHtml;
-    showToast('⚠ ดึงข้อมูลล้มเหลว แสดงประวัติในเครื่องแทน');
-    renderHistory(); 
-  }
-}
-
-function updateStats() {
-  const today = new Date().toISOString().slice(0,10);
-  document.getElementById('stat-total').textContent = records.length;
-  document.getElementById('stat-ok').textContent = records.filter(r => r.qty==='ครบ' && r.cond.includes('พร้อมใช้งาน') && !r.cond.includes('ชำรุด')).length;
-  document.getElementById('stat-warn').textContent = records.filter(r => r.qty==='ไม่ครบ' || r.cond.includes('ชำรุด')).length;
-  document.getElementById('stat-today').textContent = records.filter(r => r.date===today).length;
-}
-
-function toggleCarOther() {
-  const sel = document.getElementById('f-car-select').value;
-  const oth = document.getElementById('f-car-other');
-  oth.style.display = sel === 'other' ? 'block' : 'none';
-  if (sel === 'other') oth.focus();
-  else oth.value = '';
-}
-
-function getCarValue() {
-  const sel = document.getElementById('f-car-select').value;
-  return sel === 'other' ? document.getElementById('f-car-other').value.trim() : sel;
-}
-
-function toggleSenderOther() {
-  const sel = document.getElementById('f-sender-select').value;
-  const oth = document.getElementById('f-sender-other');
-  if (sel === 'other') {
-    oth.style.display = 'block';
-    oth.focus();
-  } else {
-    oth.style.display = 'none';
-    oth.value = '';
-  }
-}
-
-function getSenderValue() {
-  const sel = document.getElementById('f-sender-select').value;
-  return sel === 'other' ? document.getElementById('f-sender-other').value.trim() : sel;
-}
-
-function toggleReceiverOther() {
-  const sel = document.getElementById('f-receiver-select').value;
-  const oth = document.getElementById('f-receiver-other');
-  if (sel === 'other') {
-    oth.style.display = 'block';
-    oth.focus();
-  } else {
-    oth.style.display = 'none';
-    oth.value = '';
-  }
-}
-
-function getReceiverValue() {
-  const sel = document.getElementById('f-receiver-select').value;
-  return sel === 'other' ? document.getElementById('f-receiver-other').value.trim() : sel;
-}
-
-function toggleCondDetail() {
-  const isBroken = document.getElementById('cond-broken').checked;
-  const isOk = document.getElementById('cond-ok').checked;
-  document.getElementById('ready-detail-wrap').style.display = isOk ? 'block' : 'none';
-  document.getElementById('cond-detail-wrap').style.display = isBroken ? 'block' : 'none';
-}
-
-function showView(v) {
-  document.getElementById('view-form').style.display = v === 'form' ? 'block' : 'none';
-  document.getElementById('view-history').style.display = v === 'history' ? 'block' : 'none';
-  if (v === 'history') {
-    syncDataFromServer(); 
-  }
-  const bf = document.getElementById('btn-form');
-  const bh = document.getElementById('btn-history');
-  bf.className = 'btn-tab ' + (v === 'form' ? 'active' : 'inactive');
-  bh.className = 'btn-tab ' + (v === 'history' ? 'active' : 'inactive');
-}
-
-function initSig(id) {
-  const c = document.getElementById(id);
-  
-  function resizeCanvas() {
-    const rect = c.getBoundingClientRect();
-    c.width = rect.width || 300;
-    c.height = 100;
-    clearSig(id);
-  }
-  
-  resizeCanvas();
-  window.addEventListener('resize', () => {
-    const tempUrl = c.toDataURL();
-    const rect = c.getBoundingClientRect();
-    c.width = rect.width || 300;
-    c.height = 100;
-    
-    const ctx = c.getContext('2d');
-    ctx.strokeStyle = '#0000AA';
-    ctx.lineWidth = 2.5;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    
-    const img = new Image();
-    img.src = tempUrl;
-    img.onload = () => ctx.drawImage(img, 0, 0);
-  });
-  
-  const ctx = c.getContext('2d');
-  ctx.strokeStyle = '#0000AA';
-  ctx.lineWidth = 2.5;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-  
-  let drawing = false, lx = 0, ly = 0;
-  
-  function pos(e) {
-    const rect = c.getBoundingClientRect();
-    if (e.touches && e.touches.length > 0) {
-      return { 
-        x: e.touches[0].clientX - rect.left, 
-        y: e.touches[0].clientY - rect.top 
-      };
-    }
-    return { 
-      x: e.clientX - rect.left, 
-      y: e.clientY - rect.top 
-    };
-  }
-  
-  c.addEventListener('mousedown', e => { 
-    drawing = true; 
-    const p = pos(e); 
-    lx = p.x; 
-    ly = p.y; 
-  });
-  
-  c.addEventListener('mousemove', e => { 
-    if (!drawing) return; 
-    const p = pos(e); 
-    ctx.beginPath(); 
-    ctx.moveTo(lx, ly); 
-    ctx.lineTo(p.x, p.y); 
-    ctx.stroke(); 
-    lx = p.x; 
-    ly = p.y; 
-  });
-  
-  c.addEventListener('mouseup', () => drawing = false);
-  c.addEventListener('mouseleave', () => drawing = false);
-  
-  c.addEventListener('touchstart', e => { 
-    e.preventDefault(); 
-    drawing = true; 
-    const p = pos(e); 
-    lx = p.x; 
-    ly = p.y; 
-  }, {passive: false});
-  
-  c.addEventListener('touchmove', e => { 
-    e.preventDefault(); 
-    if (!drawing) return; 
-    const p = pos(e); 
-    ctx.beginPath(); 
-    ctx.moveTo(lx, ly); 
-    ctx.lineTo(p.x, p.y); 
-    ctx.stroke(); 
-    lx = p.x; 
-    ly = p.y; 
-  }, {passive: false});
-  
-  c.addEventListener('touchend', () => drawing = false);
-}
-
-function clearSig(id) {
-  const c = document.getElementById(id);
-  const ctx = c.getContext('2d');
-  ctx.clearRect(0, 0, c.width, c.height);
-}
-
-function showSuccessModal(msg) {
-  document.getElementById('success-modal-text').innerHTML = msg;
-  document.getElementById('success-modal').style.display = 'flex';
-}
-
-function closeSuccessModal() {
-  document.getElementById('success-modal').style.display = 'none';
-}
-
-function isSigEmpty(id) {
-  const c = document.getElementById(id);
-  const context = c.getContext('2d');
-  const buffer = new Uint32Array(context.getImageData(0, 0, c.width, c.height).data.buffer);
-  return !buffer.some(color => color !== 0);
-}
-
-function getSigData(id) {
-  return isSigEmpty(id) ? '' : document.getElementById(id).toDataURL('image/png');
-}
-
-async function saveRecord() {
-  const date = document.getElementById('f-date').value;
-  const car = getCarValue();
-  const sender = getSenderValue();
-  const receiver = getReceiverValue();
-  const qty = document.querySelector('input[name="qty"]:checked');
-  const condOk = document.getElementById('cond-ok').checked;
-  const condBroken = document.getElementById('cond-broken').checked;
-  const errEl = document.getElementById('form-error');
-  const btnSave = document.getElementById('btn-save');
-  
-  const missing = [];
-  if (!date) missing.push('วันที่');
-  if (!car) missing.push('ทะเบียนรถ');
-  if (!sender) missing.push('ผู้ส่งมอบ');
-  if (!receiver) missing.push('ผู้รับมอบ');
-  if (!qty) missing.push('จำนวนเครื่องมือ (ครบ/ไม่ครบ)');
-  if (!condOk && !condBroken) missing.push('สภาพเครื่องมือ (พร้อมใช้งาน/ชำรุด)');
-  
-  if (condOk) {
-    const readyCount = document.getElementById('f-ready-count').value;
-    if (!readyCount) {
-      missing.push('จำนวนชิ้นที่พร้อมใช้งาน');
-    }
-  }
-  if (condBroken) {
-    const condCount = document.getElementById('f-cond-count').value;
-    const condDetail = document.getElementById('f-cond-detail').value.trim();
-    if (!condCount) {
-      missing.push('จำนวนชิ้นที่ชำรุด');
-    }
-    if (!condDetail) {
-      missing.push('รายการชำรุด');
-    }
-  }
-  
-  if (missing.length) {
-    errEl.textContent = 'กรุณากรอก/เลือกข้อมูล: ' + missing.join(', ');
-    errEl.style.display = 'block';
-    return;
-  }
-  
-  errEl.style.display = 'none';
-  btnSave.disabled = true;
-
-  const selectedConds = [];
-  if (condOk) selectedConds.push('พร้อมใช้งาน');
-  if (condBroken) selectedConds.push('ชำรุด');
-  const condValue = selectedConds.join(', ');
-  
-  const rec = {
-    action: 'write',
-    date, time: document.getElementById('f-time').value,
-    car, sender, receiver,
-    qty: qty ? qty.value : '', 
-    cond: condValue,
-    readyCount: document.getElementById('f-ready-count').value,
-    condCount: document.getElementById('f-cond-count').value,
-    condDetail: document.getElementById('f-cond-detail').value.trim(),
-    note: document.getElementById('f-note').value.trim(),
-    sigSender: getSigData('sig-sender'), sigReceiver: getSigData('sig-receiver')
-  };
-  
-  const sEl = document.getElementById('sheets-status');
-  sEl.style.display = 'block';
-  sEl.className = 'alert';
-  sEl.style.background = '#EAF4FB';
-  sEl.style.color = '#1A5276';
-  sEl.textContent = 'กำลังบันทึกลง Google Sheets...';
-  
-  try {
-    const resData = await callBackend(rec);
-    if (resData.status === "success") {
-      sEl.className = 'alert success';
-      sEl.textContent = '✓ กำลังบันทึกลง Google Sheets....';
-      setTimeout(() => sEl.style.display = 'none', 4000);
-      
-      clearForm();
-      showSuccessModal('บันทึกข้อมูลและส่งมอบเครื่องมือเรียบร้อยแล้ว');
-      await syncDataFromServer(); 
-    } else {
-      throw new Error(resData.message || 'เซิร์ฟเวอร์หลังบ้านส่งค่าผิดพลาด');
-    }
-  } catch (err) {
-    sEl.className = 'alert error';
-    sEl.textContent = '⚠ บันทึกลงระบบออนไลน์ขัดข้อง: ' + err.message;
-  }
-  
-  btnSave.disabled = false;
-}
-
-function clearForm() {
-  ['f-ready-count','f-note', 'f-cond-count', 'f-cond-detail'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('f-car-select').value = '';
-  document.getElementById('f-car-other').value = '';
-  document.getElementById('f-car-other').style.display = 'none';
-  document.getElementById('f-sender-select').value = '';
-  document.getElementById('f-sender-other').value = '';
-  document.getElementById('f-sender-other').style.display = 'none';
-  document.getElementById('f-receiver-select').value = '';
-  document.getElementById('f-receiver-other').value = '';
-  document.getElementById('f-receiver-other').style.display = 'none';
-  
-  document.getElementById('cond-ok').checked = false;
-  document.getElementById('ready-detail-wrap').style.display = 'none';
-
-  document.querySelectorAll('input[name="qty"]').forEach(r => r.checked = false);
-  document.getElementById('cond-broken').checked = false;
-  document.getElementById('cond-detail-wrap').style.display = 'none';
-  document.getElementById('form-error').style.display = 'none';
-  
-  clearSig('sig-sender');
-  clearSig('sig-receiver');
-  document.getElementById('f-date').value = new Date().toISOString().slice(0, 10);
-}
-
-function deleteRecord(id) {
-  deleteTargetId = id;
-  const pwdInput = document.getElementById('delete-pwd-input');
-  const errorText = document.getElementById('modal-error-text');
-  
-  pwdInput.value = '';
-  errorText.style.display = 'none';
-  
-  document.getElementById('delete-modal').style.display = 'flex';
-  setTimeout(() => pwdInput.focus(), 150);
-}
-
-function closeDeleteModal() {
-  document.getElementById('delete-modal').style.display = 'none';
-  deleteTargetId = null;
-}
-
-async function confirmDelete() {
-  const password = document.getElementById('delete-pwd-input').value;
-  const errorText = document.getElementById('modal-error-text');
-  
-  if (password === 'fbct') {
-    if (deleteTargetId !== null) {
-      showToast('กำลังลบข้อมูลในระบบ...');
-      
-      try {
-        const resData = await callBackend({ action: 'delete', id: deleteTargetId.toString() });
-        if (resData.status === 'success') {
-          records = records.filter(r => r.id !== deleteTargetId);
-          saveData();
-          renderHistory();
-          showToast('✓ ลบข้อมูลในระบบสำเร็จ');
-        } else {
-          throw new Error(resData.message || 'ลบข้อมูลขัดข้อง');
-        }
-      } catch (err) {
-        showToast('⚠ ไม่สามารถดำเนินการลบข้อมูลในระบบได้: ' + err.message);
-      }
-    }
-    closeDeleteModal();
-  } else {
-    errorText.style.display = 'block';
-    document.getElementById('delete-pwd-input').focus();
-    document.getElementById('delete-pwd-input').select();
-  }
-}
-
-function buildPrintRow(r) {
-  const sigSenderTag = r.sigSender ? `<img src="${r.sigSender}">` : '-';
-  const sigReceiverTag = r.sigReceiver ? `<img src="${r.sigReceiver}">` : '-';
-  
-  return `<tr>
-    <td>${formatThaiDate(r.date)}</td>
-    <td>${r.time}</td>
-    <td>${r.car || '-'}</td>
-    <td style="text-align:left">${r.sender || '-'}</td>
-    <td>${sigSenderTag}</td>
-    <td style="text-align:left">${r.receiver || '-'}</td>
-    <td>${sigReceiverTag}</td>
-    <td>${r.qty || '-'}</td>
-    <td>${r.cond || '-'}</td>
-    <td>${r.readyCount || '-'}</td>
-    <td>${r.condCount || '-'}</td>
-    <td style="text-align:left">${r.condDetail || '-'}</td>
-    <td style="text-align:left">${r.note || '-'}</td>
-  </tr>`;
-}
-
-function getMonthYearString(recordsList) {
-  if (!recordsList || recordsList.length === 0) return "ประจำเดือน - ปี พ.ศ. -";
-  
-  const thaiMonths = [
-    'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
-    'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
-  ];
-  
-  const uniquePeriods = [];
-  recordsList.forEach(r => {
-    if (!r.date) return;
-    let str = String(r.date);
-    if (str.includes('T')) {
-      str = str.split('T')[0];
-    }
-    const parts = str.split('-');
-    if (parts.length >= 2) {
-      const yearBE = parseInt(parts[0]) + 543;
-      const monthIdx = parseInt(parts[1]) - 1;
-      const key = `${parts[0]}-${parts[1]}`;
-      if (!uniquePeriods.some(p => p.key === key)) {
-        uniquePeriods.push({ key, year: yearBE, monthIndex: monthIdx, monthName: thaiMonths[monthIdx] });
-      }
-    }
-  });
-  
-  uniquePeriods.sort((a, b) => a.key.localeCompare(b.key));
-  
-  if (uniquePeriods.length === 0) {
-    return "ประจำเดือน - ปี พ.ศ. -";
-  } else if (uniquePeriods.length === 1) {
-    return `ประจำเดือน ${uniquePeriods[0].monthName} ปี พ.ศ. ${uniquePeriods[0].year}`;
-  } else {
-    const first = uniquePeriods[0];
-    return `ประจำเดือน ${first.monthName} พ.ศ. ${first.year}`;
-  }
-}
-
-function printRecord(id) {
-  const r = records.find(x => x.id === id);
-  if (!r) return;
-  const metaText = getMonthYearString([r]);
-  
-  document.getElementById('print-records').innerHTML = `
-    <table class="ptable">
-      <thead>
-        <tr>
-          <th colspan="13" style="background: white !important; color: black !important; border: none !important; padding-bottom: 10px; text-align: center;">
-            <h2 style="font-size:15px;font-weight:700;margin-bottom:2px">แบบฟอร์มรับ-ส่งมอบเครื่องมือประจำรถแก้ไฟ</h2>
-            <p style="font-size:11px;font-weight:normal;color:#333">FM-ฉ.3-94 | การไฟฟ้าส่วนภูมิภาค สาขาบัวเชด</p>
-            <div style="font-size:11px;color:#555;margin-top:4px;font-weight:normal">${metaText}</div>
-            <div style="border-bottom:2px solid #000;margin-top:8px"></div>
-          </th>
-        </tr>
-        <tr>
-          <th>วันที่</th>
-          <th>เวลา</th>
-          <th>ทะเบียนรถ</th>
-          <th>ผู้ส่งมอบ</th>
-          <th>ลายเซ็นผู้ส่งมอบ</th>
-          <th>ผู้รับมอบ</th>
-          <th>ลายเซ็นผู้รับมอบ</th>
-          <th>จำนวนเครื่องมือ</th>
-          <th>สภาพ</th>
-          <th>พร้อมใช้งาน(จำนวนชิ้น)</th>
-          <th>ชำรุด(จำนวนชิ้นที่ชำรุด)</th>
-          <th>รายการชำรุด</th>
-          <th>หมายเหตุ</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${buildPrintRow(r)}
-      </tbody>
-    </table>`;
-  window.print();
-}
-
-function printAll() {
-  const f = getFiltered();
-  if (!f.length) { showToast('ไม่มีรายการที่สามารถพิมพ์ได้'); return; }
-  
-  const sortedPrintData = [...f].sort((a, b) => {
-    const dateA = new Date(a.date);
-    const dateB = new Date(b.date);
-    if (dateA < dateB) return -1;
-    if (dateA > dateB) return 1;
-    return (a.time || '').localeCompare(b.time || '');
-  });
-  
-  const metaText = getMonthYearString(sortedPrintData);
-  
-  document.getElementById('print-records').innerHTML = `
-    <table class="ptable">
-      <thead>
-        <tr>
-          <th colspan="13" style="background: white !important; color: black !important; border: none !important; padding-bottom: 10px; text-align: center;">
-            <h2 style="font-size:15px;font-weight:700;margin-bottom:2px">แบบฟอร์มรับ-ส่งมอบเครื่องมือประจำรถแก้ไฟ</h2>
-            <p style="font-size:11px;font-weight:normal;color:#333">FM-ฉ.3-94 | การไฟฟ้าส่วนภูมิภาค สาขาบัวเชด</p>
-            <div style="font-size:11px;color:#555;margin-top:4px;font-weight:normal">${metaText}</div>
-            <div style="border-bottom:2px solid #000;margin-top:8px"></div>
-          </th>
-        </tr>
-        <tr>
-          <th>วันที่</th>
-          <th>เวลา</th>
-          <th>ทะเบียนรถ</th>
-          <th>ผู้ส่งมอบ</th>
-          <th>ลายเซ็นผู้ส่งมอบ</th>
-          <th>ผู้รับมอบ</th>
-          <th>ลายเซ็นผู้รับมอบ</th>
-          <th>จำนวนเครื่องมือ</th>
-          <th>สภาพ</th>
-          <th>พร้อมใช้งาน(จำนวนชิ้น)</th>
-          <th>ชำรุด(จำนวนชิ้นที่ชำรุด)</th>
-          <th>รายการชำรุด</th>
-          <th>หมายเหตุ</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${sortedPrintData.map(buildPrintRow).join('')}
-      </tbody>
-    </table>`;
-  window.print();
-}
-
-function getFiltered() {
-  const q = (document.getElementById('search-box').value || '').toLowerCase();
-  return records.filter(r => (r.date + r.time + r.car + r.sender + r.receiver + r.note).toLowerCase().includes(q));
-}
-
-function renderHistory() {
-  const filtered = getFiltered();
-  const el = document.getElementById('history-list');
-  if (!filtered.length) {
-    el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--gray-500)">ไม่พบข้อมูลการบันทึกประวัติ หรือข้อมูลว่างเปล่า</div>';
-    return;
-  }
-  const rows = filtered.map(r => {
-    const isWarn = r.qty === 'ไม่ครบ' || r.cond.includes('ชำรุด');
-    const sc = isWarn ? 'var(--orange)' : 'var(--green)';
-    const sb = isWarn ? 'var(--orange-light)' : 'var(--green-light)';
-
-    const readyInfo = r.cond.includes('พร้อมใช้งาน') && r.readyCount ? ` (${r.readyCount})` : '';  
-    const condInfo = r.cond.includes('ชำรุด') ? (r.condCount ? ` (${r.condCount})` : '') + (r.condDetail ? ': ' + r.condDetail : '') : '';
-
-    let condDisplayHTML = `<span style="background:${sb};color:${sc};padding:2px 7px;border-radius:4px;font-weight:500;font-size:11px">${r.cond || '-'}</span>`;
-    if (readyInfo) condDisplayHTML += `<br><span style="font-size:11px;color:var(--green)">พร้อมใช้ ${readyInfo}</span>`;
-    if (condInfo) condDisplayHTML += `<br><span style="font-size:11px;color:var(--orange)">ชำรุด ${condInfo}</span>`;
-
-    const sigSenderTag = r.sigSender ? `<img src="${r.sigSender}">` : '-';
-    const sigReceiverTag = r.sigReceiver ? `<img src="${r.sigReceiver}">` : '-';
-
-    return `<tr>
-      <td>${formatThaiDate(r.date)}</td>
-      <td>${r.time}</td>
-      <td>${r.car || '-'}</td>
-      <td>${r.sender || '-'}</td>
-      <td>${sigSenderTag}</td>
-      <td>${r.receiver || '-'}</td>
-      <td>${sigReceiverTag}</td>
-      <td>${r.qty || '-'}</td>
-      <td>${condDisplayHTML}</td>
-      <td>${r.note || ''}</td>
-      <td>
-        <div style="display:flex;gap:4px">
-          <button style="background:var(--blue);color:white;border:none;border-radius:4px;padding:3px 8px;font-size:11px;cursor:pointer" onclick="printRecord('${r.id}')">🖨️</button>
-          <button style="background:var(--red-light);color:var(--red-dark);border:none;border-radius:4px;padding:3px 8px;font-size:11px;cursor:pointer" onclick="deleteRecord('${r.id}')">🗑</button>
+  <div class="container">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+          <div class="card text-center">
+            <!-- <div class="card-body"> -->
+              <div class="card border-blue-500">
+                      <div class="card-body" style="box-shadow: 0 10px 10px rgb(0 0 0 / 10%);">
+                <input class="form-control form-control-lg" type="text" id="idMeter" style="text-align: center;"placeholder="กรอกหมายเลขผู้ใช้ไฟฟ้า 11หลัก หรือหมายเลขมิเตอร์" maxlength="12" required>
+                <div id="output" class="mt-3"></div>
+              </div>
+            </div>
+          </div>
         </div>
-      </td>
-    </tr>`;
-  }).join('');
-  
-  el.innerHTML = `<div style="overflow-x:auto"><table class="htable"><thead><tr><th>วันที่</th><th>เวลา</th><th>ทะเบียนรถ</th><th>ผู้ส่งมอบ</th><th>ลายเซ็นผู้ส่งมอบ</th><th>ผู้รับมอบ</th><th>ลายเซ็นผู้รับมอบ</th><th>จำนวนเครื่องมือ</th><th>สภาพ</th><th>หมายเหตุ</th><th>การจัดการ</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-}
+      </div>
+      <div class="row">
+        <div class="col-md-6 mx-auto">
+          <center>
+            <button type="button"  class ="btn bd-blue-500 btn-lg text-white mt-3" id="search-btn" onclick ="findCode()" style="visibility: visible;box-shadow: 0 10px 10px rgb( 0 0 / 10%); background-image: linear-gradient(to right top, #c7911b, #c7911b, #c7911b, #c7911b, #c7911b, #c7911b, #c7911b, #c7911b, #c7911b, #c7911b, #c7911b, #c7911b);">
+              <i class="fas fa-search"></i> ค้นหา</button>
 
-function exportCSV() {
-  if (!records.length) { showToast('ไม่พบข้อมูลสำหรับส่งออก'); return; }
-  const h = ['วันที่', 'เวลา', 'ทะเบียนรถ', 'ผู้ส่งมอบ', 'ผู้รับมอบ', 'จำนวนเครื่องมือ', 'สภาพ', 'พร้อมใช้จำนวน', 'ชำรุดจำนวน', 'รายการชำรุด', 'หมายเหตุ'];
-  const rows = records.map(r => [formatThaiDate(r.date), r.time, r.car, r.sender, r.receiver, r.qty, r.cond, r.readyCount || '', r.condCount || '', r.condDetail || '', r.note].map(v => `"${(v || '').replace(/"/g, '""')}"`).join(','));
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob(['\uFEFF' + h.join(',') + '\n' + rows.join('\n')], {type: 'text/csv;charset=utf-8;'}));
-  a.download = 'รับ-ส่งมอบแก้ไฟ.csv';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  showToast('✓ ส่งออกไฟล์ CSV เรียบร้อยแล้ว');
-}
+          <button class="btn bd-orange-500  mt-3 btn-lg" type="button" disabled id="btn2" style="display:none">
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            กำลังค้นหา
+          </button>
+          </center>
+          
+          <div class="container mb-3">
+            <div id="search" >
+              <textarea style="border:none;resize:none;" id="search" readonly ></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+    <div  id="showData"></div>
+        </div>
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 2500);
-}
+<!-------------------ปิดส่วนของช่องค้นหา----------------------->
 
-window.addEventListener('load', async () => {
-  loadData();
-  document.getElementById('f-date').value = new Date().toISOString().slice(0, 10);
-  
-  setTimeout(() => {
-    initSig('sig-sender');
-    initSig('sig-receiver');
-  }, 250);
 
-  await syncDataFromServer();
-});
-</script>
+<!-------------------- เปิด footer ------------------------->
+
+<!-- Grid container -->
+<div class="container mb-3">
+    <nav class="navbar navbar-expand-lg navbar-dark bd-blue-500" style="border-radius: 25px; box-shadow: 0 10px 10px rgb(0 0 0 / 10%); background-image: linear-gradient(to right top, #74045f, #74045f, #74045f, #74045f, #74045f, #74045f, #74045f, #74045f, #74045f, #74045f, #74045f, #74045f);">     
+        <a class="navbar-brand"></a>  
+        <span class="navbar-brand flex-grow-1 text-center" style="font-size: 100%"> © Copyright 2025 (V.3): PEA Buachet</span>
+    </nav> 
+    
+  </div>
+
+
+  <!--------------------- ปิด footer --------------------->
+
+    <script>
+      // ลิงก์ Google Apps Script Web App สำหรับรับข้อมูลผ่าน API
+      const webAppUrl = "https://script.google.com/macros/s/AKfycbxUyW-3CGkfR7mAYJXr2Jq4gmZ1AtFluKiaGHvGCInsLxtAOs4bYQPQUWb4T2xg91KR/exec";
+
+      function findCode() {
+        document.getElementById('search').innerHTML = ''
+        var code = document.getElementById("idMeter").value;
+        // document.getElementById("loader").style.visibility = "visible"; 
+        $('#search-btn').hide()
+        $('#btn2').show()
+
+        if(document.getElementById('idMeter').value == "" ){
+          document.getElementById("output").innerHTML = "<div class='alert alert-danger' role='alert'>กรุณาพิมพ์หมายเลขมิเตอร์</div>";
+          setTimeout(function(){
+            document.getElementById('output').innerHTML= ""; 
+          }, 1500);  
+          $('#search-btn').show()
+          $('#btn2').hide()
+        } else {
+          // ใช้ fetch() ส่งค่าไปยัง Google Apps Script แทน google.script.run
+          fetch(`${webAppUrl}?code=${encodeURIComponent(code)}`)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              return response.text(); // เปลี่ยนเป็น .json() ได้หากฝั่ง Apps Script คืนค่าแบบ JSON
+            })
+            .then(data => {
+              updateData(data);
+            })
+            .catch(error => {
+              console.error('Error fetching data:', error);
+              Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาดในการเชื่อมต่อ',
+                text: 'กรุณาลองใหม่อีกครั้ง หรือตรวจสอบสิทธิ์การแชร์ของ Google Script',
+                showConfirmButton: true
+              });
+              $('#search-btn').show();
+              $('#btn2').hide();
+            });
+        }
+      }
+
+      function updateData(data) {
+        if(data == '<center>*ไม่พบข้อมูล<br><img src="https://ltschool.web.app/pic/falseok.gif" width="200" height="200"></center>'){
+          Swal.fire({
+            position: 'center',
+            icon: 'error',
+            title: 'ไม่พบข้อมูลของคุณ',
+            showConfirmButton: false,
+            timer: 1500
+          })
+          document.getElementById("search").innerHTML = data;
+          $('#search-btn').show()
+          $('#btn2').hide()
+          if (typeof M !== 'undefined') { M.updateTexfields(); }
+        } else {
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'ยินดีด้วยพบข้อมูลแล้ว',
+            showConfirmButton: false,
+            timer: 2000
+          })
+          document.getElementById('idMeter').value = ''
+          document.getElementById("search").innerHTML = data;
+          $('#search-btn').show()
+          $('#btn2').hide()
+
+          if (typeof M !== 'undefined') { M.updateTexfields(); }
+        }
+      }
+      window.onload = function(){document.getElementById("search-btn").style.visibility="visible"}
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"
+      xintegrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous">
+    </script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </body>
+
 </html>
