@@ -345,13 +345,13 @@ async function syncDataFromServer() {
       records = resData.records;
       saveData(); 
       renderHistory();
-      showToast('✓ ดึงประวัติส่วนกลางสำเร็จ');
+      showToast('✓ ดึงประวัติสำเร็จ');
     } else {
       throw new Error(resData.message || 'โครงสร้างข้อมูลไม่สมบูรณ์');
     }
   } catch (e) {
     el.innerHTML = originalHtml;
-    showToast('⚠ ดึงข้อมูลล้มเหลว แสดงประวัติในเครื่องแทน');
+    showToast('⚠ ดึงข้อมูลล้มเหลว');
     renderHistory(); 
   }
 }
