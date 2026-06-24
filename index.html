@@ -263,7 +263,7 @@ canvas.sig-pad{border:1px solid var(--gray-300);border-radius:var(--radius);widt
 const STORAGE_KEY = 'fire_tool_records_v3';
 
 // เปลี่ยน URL ด้านล่างนี้เป็น URL ของ Web App หลังจากการ Deploy บน Google Sheets
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwBXaxbXnINf7fDo8V4XJAX9tYcT8pKhs5j4BM0VPUetuo5MAF5x-DOMKSkY7Wl0Uw/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyZtuKyup3jjCg9PyWfWY9JCS8eXAlt-fzI9YtD8H7nQ-YoG8XFkE7HiiQFbVBNCJs/exec';
 
 let records = [];
 let deleteTargetId = null; 
@@ -628,7 +628,7 @@ async function saveRecord() {
       setTimeout(() => sEl.style.display = 'none', 4000);
       
       clearForm();
-      showSuccessModal('บันทึกข้อมูลและส่งมอบเครื่องมือเรียบร้อยแล้ว ลงในระบบ Google Sheets ฝั่งออนไลน์เรียบร้อยครับ 🎉');
+      showSuccessModal('บันทึกข้อมูลและส่งมอบเครื่องมือเรียบร้อยแล้ว ลงในระบบเรียบร้อยแล้ว');
       await syncDataFromServer(); 
     } else {
       throw new Error(resData.message || 'เซิร์ฟเวอร์หลังบ้านส่งค่าผิดพลาด');
