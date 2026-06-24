@@ -351,7 +351,7 @@ async function syncDataFromServer() {
     }
   } catch (e) {
     el.innerHTML = originalHtml;
-    showToast('⚠ ดึงข้อมูลล้มเหลว');
+    showToast('⚠ ดึงข้อมูลล้มเหลว ');
     renderHistory(); 
   }
 }
@@ -539,6 +539,11 @@ function closeSuccessModal() {
   document.getElementById('success-modal').style.display = 'none';
 }
 
+// สร้าง ID เฉพาะขึ้นมาทดแทนการบันทึก Timestamp เพื่อระบุแถว
+function generateUniqueID() {
+  return 'ID-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+}
+
 function isSigEmpty(id) {
   const c = document.getElementById(id);
   const context = c.getContext('2d');
@@ -600,8 +605,10 @@ async function saveRecord() {
   if (condBroken) selectedConds.push('ชำรุด');
   const condValue = selectedConds.join(', ');
   
+  // บันทึกรหัส Unique ID แทนการพึ่งพาเวลา Timestamp
   const rec = {
     action: 'write',
+    id: generateUniqueID(),
     date, time: document.getElementById('f-time').value,
     car, sender, receiver,
     qty: qty ? qty.value : '', 
@@ -628,7 +635,7 @@ async function saveRecord() {
       setTimeout(() => sEl.style.display = 'none', 4000);
       
       clearForm();
-      showSuccessModal('บันทึกข้อมูลและส่งมอบเครื่องมือเรียบร้อยแล้ว ลงในระบบเรียบร้อยแล้ว');
+      showSuccessModal('บันทึกข้อมูลและส่งมอบเครื่องมือเรียบร้อยแล้ว');
       await syncDataFromServer(); 
     } else {
       throw new Error(resData.message || 'เซิร์ฟเวอร์หลังบ้านส่งค่าผิดพลาด');
@@ -868,7 +875,7 @@ function renderHistory() {
   const filtered = getFiltered();
   const el = document.getElementById('history-list');
   if (!filtered.length) {
-    el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--gray-500)">ไม่พบข้อมูลการบันทึกประวัติ หรือข้อมูลว่างเปล่า</div>';
+    el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--gray-500)">ไม่พบประวัติการบันทึก</div>';
     return;
   }
   const rows = filtered.map(r => {
